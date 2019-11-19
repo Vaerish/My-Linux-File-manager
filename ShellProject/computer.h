@@ -144,15 +144,36 @@ namespace Shell //
             if(args.size() == 1 && args[0] == "-l") 
             {
               // display output
-              for(auto childPair :curDir->Children())
+
+              std::string PermissionSection = curDir->PermsStr();
+              if(curUser->Username() == curDir->User())
               {
-                Node* child = childPair.second;
-                std::cout << child->PermsStr() << " " << child->NumDirs()
-                          << " " << child->User() << " " << child->Group() << " "
-                          << child->Size() << " " << child->TimeStr() << " "
-                          // Adds blue color if it is a dir
-                          << (child->isDir ? "\033[34m" : "")
-                          << child->name << "\033[0m" << std::endl;
+                PermissionSection = PermissionSection.substr(1,3);
+              }
+              else if(curUser->Group() == curDir->Group())
+              {
+                PermissionSection = PermissionSection.substr(4,3);
+              }
+              else
+              {
+                PermissionSection = PermissionSection.substr(7,3);
+              }
+              if (PermissionSection.find('r') != std::string::npos)
+              {
+                for(auto childPair :curDir->Children())
+                {
+                  Node* child = childPair.second;
+                      std::cout << child->PermsStr() << " " << child->NumDirs()
+                            << " " << child->User() << " " << child->Group() << " "
+                            << child->Size() << " " << child->TimeStr() << " "
+                            // Adds blue color if it is a dir
+                            << (child->isDir ? "\033[34m" : "")
+                            << child->name << "\033[0m" << std::endl;
+                }
+              }
+              else
+              {
+                std::cout << "Permission Denied" << std::endl;
               }
             }
             else
@@ -165,15 +186,38 @@ namespace Shell //
           // no args
           else
           {
-            // display simple output
-            for(auto child : curDir->Children())
+            std::string PermissionSection = curDir->PermsStr();
+            if(curUser->Username() == curDir->User())
             {
-              std::cout << (child.second->IsDir() ? "\033[34m" : "") 
-                        << child.first << "\033[0m ";
+              PermissionSection = PermissionSection.substr(1,3);
             }
-            // adds a new line at the end only if there was something to print
-            if(curDir->Children().size() > 0)
-              std::cout << std::endl;
+            else if(curUser->Group() == curDir->Group())
+            {
+              PermissionSection = PermissionSection.substr(4,3);
+            }
+            else
+            {
+              PermissionSection = PermissionSection.substr(7,3);
+            }
+            if (PermissionSection.find('r') != std::string::npos)
+            {
+              // display simple output
+              for(auto child : curDir->Children())
+              {
+                  Node* childSec = child.second;
+                  std::string PermissionSection = childSec->PermsStr();
+                  
+                      std::cout << (child.second->IsDir() ? "\033[34m" : "") 
+                                << child.first << "\033[0m ";
+              }
+              // adds a new line at the end only if there was something to print
+              if(curDir->Children().size() > 0)
+                std::cout << std::endl;
+            }
+            else
+            {
+              std::cout << "Permission Denied" << std::endl;
+            }
           }
           
         }
@@ -226,12 +270,53 @@ namespace Shell //
           {
             // iterate over args
             for(std::string arg : args)
-            {
-              // try to add and if that fails, update the current timestamp
-              if(!curDir->AddChild(new Node(arg, false, curDir)))
+            {  
+              std::string PermissionSection = curDir->PermsStr();
+              if(curUser->Username() == curDir->User())
               {
-                  curDir->children[arg]->UpdateTimeStamp();
+                PermissionSection = PermissionSection.substr(1,3);
               }
+              else if(curUser->Group() == curDir->Group())
+              {
+                PermissionSection = PermissionSection.substr(4,3);
+              }
+              else
+              {
+                PermissionSection = PermissionSection.substr(7,3);
+              }
+              if (PermissionSection.find('w') != std::string::npos)
+              {
+                // try to add and if that fails, update the current timestamp
+                if(!curDir->AddChild(new Node(arg, false, curDir)))
+                {
+                    std::string PermissionSection = curDir->children[arg]->PermsStr();
+                    if(curUser->Username() == curDir->children[arg]->User())
+                    {
+                      PermissionSection = PermissionSection.substr(1,3);
+                    }
+                    else if(curUser->Group() == curDir->children[arg]->Group())
+                    {
+                      PermissionSection = PermissionSection.substr(4,3);
+                    }
+                    else
+                    {
+                      PermissionSection = PermissionSection.substr(7,3);
+                    }
+                    if (PermissionSection.find('w') != std::string::npos)
+                    {
+                        curDir->children[arg]->UpdateTimeStamp();
+                    }
+                    else
+                    {
+                      std::cout << "Permission Denied" << std::endl;
+                    }
+                }
+              }
+              else
+              {
+                std::cout << "Permission Denied" << std::endl;
+              }
+              
             }
           }
         }
@@ -264,8 +349,31 @@ namespace Shell //
               if(!file->isDir)
                 std::cout << "cd: " << args[0] << " Not a directory\n";
               else
-                // else set curDir to it
-                curDir = file;
+              {
+                std::string PermissionSection = file->PermsStr();
+                if(curUser->Username() == file->User())
+                {
+                  PermissionSection = PermissionSection.substr(1,3);
+                }
+                else if(curUser->Group() == file->Group())
+                {
+                  PermissionSection = PermissionSection.substr(4,3);
+                }
+                else
+                {
+                  PermissionSection = PermissionSection.substr(7,3);
+                }
+                if (PermissionSection.find('x') != std::string::npos)
+                {
+                  // else set curDir to it
+                  curDir = file;
+                }
+                else
+                {
+                  std::cout << "Permission Denied" << std::endl;
+                }
+                
+              }
             // else file isn't real
             else std::cout << "cd: Directory does not exist\n";
           }
