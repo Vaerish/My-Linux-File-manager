@@ -146,7 +146,11 @@ namespace Shell //
               // display output
 
               std::string PermissionSection = curDir->PermsStr();
-              if(curUser->Username() == curDir->User())
+              if(curUser->Username() == "Root")
+              {
+                PermissionSection = "rwx";
+              }
+              else if(curUser->Username() == curDir->User())
               {
                 PermissionSection = PermissionSection.substr(1,3);
               }
@@ -187,7 +191,11 @@ namespace Shell //
           else
           {
             std::string PermissionSection = curDir->PermsStr();
-            if(curUser->Username() == curDir->User())
+            if(curUser->Username() == "Root")
+            {
+              PermissionSection = "rwx";
+            }
+            else if(curUser->Username() == curDir->User())
             {
               PermissionSection = PermissionSection.substr(1,3);
             }
@@ -245,15 +253,40 @@ namespace Shell //
           // else 
           else
           {
-            // iterate over arguments
-            for(std::string arg : args)
+            std::string PermissionSection = curDir->PermsStr();
+            if(curUser->Username() == "Root")
             {
-              // Attempt to add new directory if fails output such a message.
-              if(!curDir->AddChild(new Node(arg, true, curDir)))
+              PermissionSection = "rwx";
+            }
+            else if(curUser->Username() == curDir->User())
+            {
+              PermissionSection = PermissionSection.substr(1,3);
+            }
+            else if(curUser->Group() == curDir->Group())
+            {
+              PermissionSection = PermissionSection.substr(4,3);
+            }
+            else
+            {
+              PermissionSection = PermissionSection.substr(7,3);
+            }
+            if (PermissionSection.find('w') != std::string::npos)
+            {
+            // iterate over arguments
+              for(std::string arg : args)
               {
-                std::cout << "mkdir: cannot create directory '" << arg << "': File exits\n"; 
+                // Attempt to add new directory if fails output such a message.
+                if(!curDir->AddChild(new Node(arg, true, curDir)))
+                {
+                  std::cout << "mkdir: cannot create directory '" << arg << "': File exits\n"; 
+                }
               }
             }
+            else
+            {
+              std::cout << "Permission Denied" << std::endl;
+            }
+            
           }
         }
         // Handles touch command
@@ -268,29 +301,38 @@ namespace Shell //
           // otherwise attempt do it
           else
           {
-            // iterate over args
-            for(std::string arg : args)
-            {  
-              std::string PermissionSection = curDir->PermsStr();
-              if(curUser->Username() == curDir->User())
-              {
-                PermissionSection = PermissionSection.substr(1,3);
-              }
-              else if(curUser->Group() == curDir->Group())
-              {
-                PermissionSection = PermissionSection.substr(4,3);
-              }
-              else
-              {
-                PermissionSection = PermissionSection.substr(7,3);
-              }
-              if (PermissionSection.find('w') != std::string::npos)
-              {
+            std::string PermissionSection = curDir->PermsStr();
+            if(curUser->Username() == "Root")
+            {
+              PermissionSection = "rwx";
+            }
+            else if(curUser->Username() == curDir->User())
+            {
+              PermissionSection = PermissionSection.substr(1,3);
+            }
+            else if(curUser->Group() == curDir->Group())
+            {
+              PermissionSection = PermissionSection.substr(4,3);
+            }
+            else
+            {
+              PermissionSection = PermissionSection.substr(7,3);
+            }
+            if (PermissionSection.find('w') != std::string::npos)
+            {
+              // iterate over args
+              for(std::string arg : args)
+              {  
+                
                 // try to add and if that fails, update the current timestamp
                 if(!curDir->AddChild(new Node(arg, false, curDir)))
                 {
                     std::string PermissionSection = curDir->children[arg]->PermsStr();
-                    if(curUser->Username() == curDir->children[arg]->User())
+                    if(curUser->Username() == "Root")
+                    {
+                      PermissionSection = "rwx";
+                    }
+                    else if(curUser->Username() == curDir->children[arg]->User())
                     {
                       PermissionSection = PermissionSection.substr(1,3);
                     }
@@ -311,13 +353,14 @@ namespace Shell //
                       std::cout << "Permission Denied" << std::endl;
                     }
                 }
+                
               }
-              else
-              {
-                std::cout << "Permission Denied" << std::endl;
-              }
-              
             }
+            else
+            {
+              std::cout << "Permission Denied" << std::endl;
+            }
+            
           }
         }
         // Handles cd command
@@ -351,7 +394,11 @@ namespace Shell //
               else
               {
                 std::string PermissionSection = file->PermsStr();
-                if(curUser->Username() == file->User())
+                if(curUser->Username() == "Root")
+                {
+                  PermissionSection = "rwx";
+                }
+                else if(curUser->Username() == file->User())
                 {
                   PermissionSection = PermissionSection.substr(1,3);
                 }
@@ -363,7 +410,7 @@ namespace Shell //
                 {
                   PermissionSection = PermissionSection.substr(7,3);
                 }
-                if (PermissionSection.find('x') != std::string::npos)
+                if (PermissionSection.find('x') != std::string::npos || args[0] == ".." || args[0] == "/")
                 {
                   // else set curDir to it
                   curDir = file;
@@ -390,29 +437,53 @@ namespace Shell //
           // else if there are args
           else
           {
-            // iterate over them
-            for(auto arg : args)
+            std::string PermissionSection = curDir->PermsStr();
+            if(curUser->Username() == "Root")
             {
-              // try to find the arg
-              Node* file = findFile(arg);
-              // if it doesn't exist, error
-              if(file == nullptr)
+              PermissionSection = "rwx";
+            }
+            else if(curUser->Username() == curDir->User())
+            {
+              PermissionSection = PermissionSection.substr(1,3);
+            }
+            else if(curUser->Group() == curDir->Group())
+            {
+              PermissionSection = PermissionSection.substr(4,3);
+            }
+            else
+            {
+              PermissionSection = PermissionSection.substr(7,3);
+            }
+            if (PermissionSection.find('w') != std::string::npos)
+            {
+              // iterate over them
+              for(auto arg : args)
               {
-                std::cout << "rm: File '" << arg << "' not found\n";
+                // try to find the arg
+                Node* file = findFile(arg);
+                // if it doesn't exist, error
+                if(file == nullptr)
+                {
+                  std::cout << "rm: File '" << arg << "' not found\n";
+                }
+                // if file is a directory
+                else if(file->isDir)
+                {
+                  // error
+                  std::cout << "rm: cannot remove '" << arg 
+                            << "': Is a directory\n";
+                }
+                // else is valid so delete
+                else
+                {
+                  file->parent->DeleteChild(file);
+                  delete file;
+                }
               }
-              // if file is a directory
-              else if(file->isDir)
-              {
-                // error
-                std::cout << "rm: cannot remove '" << arg 
-                          << "': Is a directory\n";
-              }
-              // else is valid so delete
-              else
-              {
-                file->parent->DeleteChild(file);
-                delete file;
-              }
+            }
+            else
+            {
+              std::cout << "Permission Denied" << std::endl;
             }
           }
         }
@@ -428,46 +499,70 @@ namespace Shell //
           // has args
           else
           {
-            // iterate over args
-            for(auto arg : args)
+            std::string PermissionSection = curDir->PermsStr();
+            if(curUser->Username() == "Root")
             {
-              //find file
-              Node* file = findFile(arg);
-              // if not found
-              if(file == nullptr)
+              PermissionSection = "rwx";
+            }
+            else if(curUser->Username() == curDir->User())
+            {
+              PermissionSection = PermissionSection.substr(1,3);
+            }
+            else if(curUser->Group() == curDir->Group())
+            {
+              PermissionSection = PermissionSection.substr(4,3);
+            }
+            else
+            {
+              PermissionSection = PermissionSection.substr(7,3);
+            }
+            if (PermissionSection.find('w') != std::string::npos)
+            {
+              // iterate over args
+              for(auto arg : args)
               {
-                // error
-                std::cout << "rm: File '" << arg << "' not found\n";
-              }
-              // if file is not a directory
-              else if(!file->isDir)
-              {
-                // error
-                std::cout << "rm: failed to remove '" << arg 
-                          << "': Not a directory\n";
-              }
-              // if there is stuff in the file,
-              else if(file->children.size() > 0)
-              {
-                // error
-                std::cout << "rm: failed to remove '" << file->Name() 
-                          << "': Directory not empty\n";
-              }
-              // else delete files
-              else
-              {
-                // if we try to delete this directory, move back a directory
-                if(file == curDir)
-                  curDir = file->parent;
-                // delete the file if it isn't the root.
-                if(file != rootFile)
+                //find file
+                Node* file = findFile(arg);
+                // if not found
+                if(file == nullptr)
                 {
-                  file->parent->DeleteChild(file);
-                  delete file;
+                  // error
+                  std::cout << "rm: File '" << arg << "' not found\n";
                 }
-                // else error
-                else std::cout << "rm: Permission Denied\n";
+                // if file is not a directory
+                else if(!file->isDir)
+                {
+                  // error
+                  std::cout << "rm: failed to remove '" << arg 
+                            << "': Not a directory\n";
+                }
+                // if there is stuff in the file,
+                else if(file->children.size() > 0)
+                {
+                  // error
+                  std::cout << "rm: failed to remove '" << file->Name() 
+                            << "': Directory not empty\n";
+                }
+                // else delete files
+                else
+                {
+                  // if we try to delete this directory, move back a directory
+                  if(file == curDir)
+                    curDir = file->parent;
+                  // delete the file if it isn't the root.
+                  if(file != rootFile)
+                  {
+                    file->parent->DeleteChild(file);
+                    delete file;
+                  }
+                  // else error
+                  else std::cout << "rm: Permission Denied\n";
+                }
               }
+            }
+            else
+            {
+              std::cout << "Permission Denied" << std::endl;
             }
           }
         }
@@ -521,13 +616,38 @@ namespace Shell //
                   // else
                   else
                   {
-                    // break up the digit
-                    file->perms = 
+                    std::string PermissionSection = file->PermsStr();
+                    if(curUser->Username() == "Root")
                     {
-                      permInt / 100 % 10, 
-                      permInt / 10 % 10, 
-                      permInt % 10
-                    };
+                      PermissionSection = "rwx";
+                    }
+                    else if(curUser->Username() == file->User())
+                    {
+                      PermissionSection = PermissionSection.substr(1,3);
+                    }
+                    else if(curUser->Group() == file->Group())
+                    {
+                      PermissionSection = PermissionSection.substr(4,3);
+                    }
+                    else
+                    {
+                      PermissionSection = PermissionSection.substr(7,3);
+                    }
+                    if (PermissionSection.find('w') != std::string::npos)
+                    {
+                      // break up the digit
+                      file->perms = 
+                      {
+                        permInt / 100 % 10, 
+                        permInt / 10 % 10, 
+                        permInt % 10
+                      };
+                    }
+                    else
+                    {
+                      std::cout << "Permission Denied" << std::endl;
+                    }
+                    
                   }
                 }
               }
