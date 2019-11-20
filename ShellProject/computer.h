@@ -658,6 +658,190 @@ namespace Shell //
             }
           }
         }
+
+        else if(command == "cat")
+        {
+        // if no args
+          if(args.size() == 0)
+          {
+            // error
+            std::cout << "cat: Invalid use";
+          }
+          // else if there are args
+          else
+          {
+              // iterate over them
+              for(auto arg : args)
+              {
+                // try to find the arg
+                Node* file = findFile(arg);
+                // if it doesn't exist, error
+                if(file == nullptr)
+                {
+                  std::cout << "cat: File '" << arg << "' not found\n";
+                }
+                // if file is a directory
+                else if(file->isDir)
+                {
+                  // error
+                  std::cout << "cat: cannot display '" << arg 
+                            << "': Is a directory\n";
+                }
+                // else is valid so display
+                else
+                {
+                  std::string PermissionSection = file->PermsStr();
+                  if(curUser->Username() == "Root")
+                  {
+                    PermissionSection = "rwx";
+                  }
+                  else if(curUser->Username() == file->User())
+                  {
+                    PermissionSection = PermissionSection.substr(1,3);
+                  }
+                  else if(curUser->Group() == file->Group())
+                  {
+                    PermissionSection = PermissionSection.substr(4,3);
+                  }
+                  else
+                  {
+                    PermissionSection = PermissionSection.substr(7,3);
+                  }
+                  if (PermissionSection.find('r') != std::string::npos)
+                  {
+                    std::cout << "Fake Fake Fake, blah blah blah is in this file. "
+                              << "If you are seeing this then you did have permission to cat the file.\n";
+                  }
+                  else
+                  {
+                    std::cout << "Permission Denied" << std::endl;
+                  }                
+                }
+              }
+          }
+        }
+        else if(command == "useradd")
+        {
+            //Code for useradd
+        }
+        else if(command == "chuser")
+        {
+            //Code for chuser
+        }
+        else if(command == "groupadd")
+        {
+            //Code for groupadd
+        }
+        else if(command == "usermod")
+        {
+            //Code for usermod
+        }
+        //Adem will need to add permission number stuff to chown when done
+        else if(command == "chown")
+        {
+            //Code for chown
+        }
+        //Adem will need to add permission number stuff to chgrp when done
+        else if(command == "chgrp")
+        {
+            //Code for chgrp
+        }
+        else if(command == "userdel")
+        {
+            //Code for userdel
+        }
+        else if(command == "groupdel")
+        {
+            //Code for groupdel
+        }
+        else if(command == "groups")
+        {
+            //Code for groups
+        }
+        else if(command == "users")
+        {
+            //Code for users
+        }
+        else if(command == "run")
+        {
+          // if no args
+          if(args.size() == 0)
+          {
+            // error
+            std::cout << "run: Invalid use";
+          }
+          // else if there are args
+          else
+          {
+              // iterate over them
+              for(auto arg : args)
+              {
+                // try to find the arg
+                Node* file = findFile(arg);
+                // if it doesn't exist, error
+                if(file == nullptr)
+                {
+                  std::cout << "run: File '" << arg << "' not found\n";
+                }
+                // if file is a directory
+                else if(file->isDir)
+                {
+                  // error
+                  std::cout << "run: cannot execute '" << arg 
+                            << "': Is a directory\n";
+                }
+                // else is valid so execute
+                else
+                {
+                  std::string PermissionSection = file->PermsStr();
+                  if(curUser->Username() == "Root")
+                  {
+                    PermissionSection = "rwx";
+                  }
+                  else if(curUser->Username() == file->User())
+                  {
+                    PermissionSection = PermissionSection.substr(1,3);
+                  }
+                  else if(curUser->Group() == file->Group())
+                  {
+                    PermissionSection = PermissionSection.substr(4,3);
+                  }
+                  else
+                  {
+                    PermissionSection = PermissionSection.substr(7,3);
+                  }
+                  if (PermissionSection.find('x') != std::string::npos)
+                  {
+                    //Code for run!
+                    //Code for run!
+                    //Code for run!
+                    //Code for run!
+                  }
+                  else
+                  {
+                    std::cout << "Permission Denied" << std::endl;
+                  }                
+                }
+              }
+          }
+
+        }
+        else if(command == "ps")
+        {
+            //Code for ps
+        }
+        else if(command == "kill")
+        {
+            //Code for kill
+        }
+        else if(command == "schedHist")
+        {
+            //Code for schedHist
+        }
+        //Node stuff maybe?
+        //
+        //
+
         // Handle help command
         else if(command == "help")
         {
