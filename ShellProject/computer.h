@@ -8,11 +8,11 @@
 
 #ifndef COMPUTER_H
 #define COMPUTER_H
-namespace Shell // 
+namespace Shell //
 {
   const std::string CMDS[] = {"", "ls", "pwd", "exit", "mkdir", "touch", "cd", "rm", "rmdir", "chmod"};
 
-  // Computer class 
+  // Computer class
   // Represents the OS who controls the file System.
   class Computer
   {
@@ -26,7 +26,11 @@ namespace Shell //
       User* curUser;
       // The name of this computer
       std::string computerName;
-
+      // Creating lists to track users and groups
+      std::vector<User> user_list;
+      std::vector<std::string> group_list;
+      // FLAG: SET TO FALSE BEFORE USING. DO NOT USE OUTSIDE THE PARSER.
+      bool parser_flag = false;
 
     // Public functions
     public:
@@ -62,7 +66,10 @@ namespace Shell //
         // simple hack to make my life easier down the line.
         rootFile->parent = rootFile;
         // Make the root user.
-        curUser = new User("root", "root", true, "toor");
+        //curUser = new User("root", "root", true);
+        user_list.push_back(User("root", "Users", true));
+        group_list.push_back("Users");
+        curUser = user_list.data();
         // set the computer name.
         computerName = "computer";
         // move the current location to the root - this will change depending
@@ -79,7 +86,7 @@ namespace Shell //
         // Start the console.
         console();
       }
-      
+
     // Private functions
     private:
       // Console handles taking in input and outputting correct response.
@@ -185,7 +192,6 @@ namespace Shell //
               // otherwise invalid useage
               std::cout << "Invalid use - For help use: help ls\n";
             }
-            
           }
           // no args
           else
@@ -214,8 +220,7 @@ namespace Shell //
               {
                   Node* childSec = child.second;
                   std::string PermissionSection = childSec->PermsStr();
-                  
-                      std::cout << (child.second->IsDir() ? "\033[34m" : "") 
+                      std::cout << (child.second->IsDir() ? "\033[34m" : "")
                                 << child.first << "\033[0m ";
               }
               // adds a new line at the end only if there was something to print
@@ -227,7 +232,6 @@ namespace Shell //
               std::cout << "Permission Denied" << std::endl;
             }
           }
-          
         }
         // Handles pwd command
         else if(command == "pwd")
@@ -250,7 +254,7 @@ namespace Shell //
             // error
             std::cout << "Invalid use - For help use: help mkdir\n";
           }
-          // else 
+          // else
           else
           {
             std::string PermissionSection = curDir->PermsStr();
@@ -286,7 +290,6 @@ namespace Shell //
             {
               std::cout << "Permission Denied" << std::endl;
             }
-            
           }
         }
         // Handles touch command
@@ -322,8 +325,7 @@ namespace Shell //
             {
               // iterate over args
               for(std::string arg : args)
-              {  
-                
+              {
                 // try to add and if that fails, update the current timestamp
                 if(!curDir->AddChild(new Node(arg, false, curDir)))
                 {
@@ -353,14 +355,12 @@ namespace Shell //
                       std::cout << "Permission Denied" << std::endl;
                     }
                 }
-                
               }
             }
             else
             {
               std::cout << "Permission Denied" << std::endl;
             }
-            
           }
         }
         // Handles cd command
@@ -419,7 +419,6 @@ namespace Shell //
                 {
                   std::cout << "Permission Denied" << std::endl;
                 }
-                
               }
             // else file isn't real
             else std::cout << "cd: Directory does not exist\n";
@@ -647,7 +646,6 @@ namespace Shell //
                     {
                       std::cout << "Permission Denied" << std::endl;
                     }
-                    
                   }
                 }
               }
@@ -658,7 +656,6 @@ namespace Shell //
             }
           }
         }
-
         else if(command == "cat")
         {
         // if no args
@@ -715,26 +712,107 @@ namespace Shell //
                   else
                   {
                     std::cout << "Permission Denied" << std::endl;
-                  }                
+                  }
                 }
               }
           }
         }
+        // Handles useradd command
         else if(command == "useradd")
         {
-            //Code for useradd
+            // Creates new user and adds them to Users group & Sets that group as their primary
+	    if (args.size() == 1)
+            {
+	      // Checking to make sure that this user does not already exist
+              parser_flag = false;
+              for (int i = 0; (unsigned)i < user_list.size(); ++i)
+              {
+                if (user_list.at(i).Username() == args[0])
+                {
+                  parser_flag = true;
+                  break;
+                }
+              }
+              // User already exists, send error message
+              if (parser_flag)
+              {
+                std::cout << "Error: User '" << args[0] << "' already exists. Use 'users' command to see list of current users." << std::endl;
+              }
+              // User does not already exist: Create and add to nedded lists.
+              else
+              {
+                user_list.push_back(User(args[0], "Users", false));
+              }
+	    }
+            else if (args.size() == 3 && args[0] == "-G")
+            {
+              // Form of "useradd -G <group[,group]> <username>"
+              // Adds new user to all listed groups if possible (group exists). Still sets Users to be default group.
+              // Checking to make sure that this user does not already exist
+              parser_flag = false;
+              for (int i = 0; (unsigned)i < user_list.size(); ++i)
+              {
+                if (user_list.at(i).Username() == args[2])
+                {
+                  parser_flag = true;
+                  break;
+                }
+              }
+              // User already exists, send error message
+              if (parser_flag)
+              {
+                std::cout << "Error: User '" << args[2] << "' already exists. Use 'users' command to see list of cur$
+              }
+              else // User does not already exist so create it and add it to all existing groups listed
+              {
+                user_list.push_back(User(args[2], "Users", false));
+                // Search through listed groups and add to all existing ones
+                // HERE NOW THIS IS THE NEXT STEP
+              }
+            }
+            else
+            {
+              // Else no arguments provided
+	      std::cout << "Invalid use - For help use: help useradd\n";
+            }
         }
+        // Handles chuser command
         else if(command == "chuser")
         {
-            //Code for chuser
+             if (args.size() == 2)
+            {
+              // For of "chuser <username>"
+              // Change active user to one indicated if that user exists, otherwise fails
+            }
+            // Else no arguments provided
+            std::cout << "Invalid use - For help use: help chuser\n";
         }
+        // Handles groupadd command
         else if(command == "groupadd")
         {
-            //Code for groupadd
+            if (args.size() == 2)
+            {
+              // Form of "groupadd <group>"
+              // Creates new group and adds Root user to itself
+            }
+            // Else no arguments provided
+            std::cout << "Invalid use - For help use: help groupadd\n";
         }
+        // Handles usermod command
         else if(command == "usermod")
         {
-            //Code for usermod
+            if (args.size() == 4)
+            {
+              // Must have "usermod -g <group> <username>" format.
+              // Fail if user or group doesnt exist or the user is not part of the group.
+            }
+            if (args.size() == 5)
+            {
+              // Must have "usermod -a -G <group> <username>" format.
+              // Adds indicated user to group. Fails if the user or group doesnt already exist.
+            }
+            // Incorrect number of arguments provided
+            std::cout << "Invalid use - For help use: help usermod\n";
         }
         //Adem will need to add permission number stuff to chown when done
         else if(command == "chown")
@@ -760,7 +838,12 @@ namespace Shell //
         }
         else if(command == "users")
         {
-            //Code for users
+          //Prints all known users
+          for (int i = 0; (unsigned)i < user_list.size(); i++)
+          {
+            std::cout << user_list.at(i).Username() << " ";
+          }
+          std::cout << std::endl;
         }
         else if(command == "run")
         {
@@ -820,11 +903,10 @@ namespace Shell //
                   else
                   {
                     std::cout << "Permission Denied" << std::endl;
-                  }                
+                  }
                 }
               }
           }
-
         }
         else if(command == "ps")
         {
@@ -856,7 +938,6 @@ namespace Shell //
             {
               commands("help", std::vector<std::string>{cmd});
             }
-            
           }
           else if(args[0] == "ls")
           {
@@ -909,7 +990,6 @@ namespace Shell //
         {
           std::cout << "Command '" << command << "' not found.\n";
         }
-        
         return true;
       }
       // returns the current working directory

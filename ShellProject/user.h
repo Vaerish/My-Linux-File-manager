@@ -7,32 +7,30 @@
 
 namespace Shell
 {
-  // basic user class built for future use. 
+  // basic user class built for future use.
   // Mostly use to store a name and password atm
   class User
   {
     private:
       std::string uname;
-      std::string group;
+      std::string primary_group;
+      std::vector<std::string> group_list;
       bool isAdmin;
-      std::string pword;
     public:
       // Constructor
-      User(std::string name, std::string g, bool a, std::string pass) 
+      User(std::string name, std::string g, bool a)
       {
         uname = name;
-        group = g;
+        primary_group = g;
         isAdmin = a;
-        pword = pass;
+        group_list.push_back(g);
       }
       // getters
       std::string Username() const { return uname; }
-      std::string Group() const { return group; }
+      std::string Group() const { return primary_group; }
       bool IsAdmin() const { return isAdmin; }
-      // verify password bc not gonna expose password
-      bool VerifyPassword(std::string pass) const { return pword == pass; }
-  
   };
-} // 
+
+} //
 
 #endif

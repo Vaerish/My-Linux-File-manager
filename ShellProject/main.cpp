@@ -1,5 +1,5 @@
 /*
- * Name: Cash 
+ * Name: Cash
  * Class: Operating Systems
  * Assignment Shell Emulator
  */
