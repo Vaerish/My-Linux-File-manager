@@ -31,6 +31,9 @@ namespace Shell //
       std::vector<std::string> group_list;
       // FLAG: SET TO FALSE BEFORE USING. DO NOT USE OUTSIDE THE PARSER.
       bool parser_flag = false;
+      // String used to hold temporary strings
+      std::string temp_string = "";
+      std::string temp_token = "";
 
     // Public functions
     public:
@@ -45,7 +48,7 @@ namespace Shell //
       // Deconstructor, make sure we don't have memory leaks :)
       ~Computer()
       {
-        delete curUser;
+        //delete curUser;
         // Delete the root : let its deconstructor handle deleting
         // the rest of the file system.
         delete rootFile;
@@ -69,7 +72,7 @@ namespace Shell //
         //curUser = new User("root", "root", true);
         user_list.push_back(User("root", "Users", true));
         group_list.push_back("Users");
-        curUser = user_list.data();
+        curUser = &user_list[0];
         // set the computer name.
         computerName = "computer";
         // move the current location to the root - this will change depending
@@ -117,6 +120,27 @@ namespace Shell //
           looping = parser(input);
         }
       }
+      //Returns -1 if user cannot be found or returns the index
+      int findUser(const std::string uname)
+      {
+        for (int i = 0; (unsigned) i < user_list.size(); i++)
+        {
+          if (user_list.at(i).Username() == uname)
+            return i;
+        }
+        return -1;
+      }
+      //Returns -1 id the group cannot be found or returns the index
+      int findGroup(const std::string gname)
+      {
+        for (int i = 0; (unsigned) i < group_list.size(); i++)
+        {
+          if (group_list.at(i) == gname)
+            return i;
+        }
+        return -1;
+      }
+
       // Parses input. returns true if the console should continue.
       bool parser(std::string input)
       {
@@ -742,6 +766,7 @@ namespace Shell //
               else
               {
                 user_list.push_back(User(args[0], "Users", false));
+                curUser = &user_list[0]; //Update curUser pointer after altering vector
               }
 	    }
             else if (args.size() == 3 && args[0] == "-G")
@@ -761,13 +786,49 @@ namespace Shell //
               // User already exists, send error message
               if (parser_flag)
               {
-                std::cout << "Error: User '" << args[2] << "' already exists. Use 'users' command to see list of cur$
+                std::cout << "Error: User '" << args[2] << "' already exists. Use 'users' command to see list of current users" << std::endl;
               }
               else // User does not already exist so create it and add it to all existing groups listed
               {
                 user_list.push_back(User(args[2], "Users", false));
+                curUser = &user_list[0]; //Update curUser pointer after altering vector
                 // Search through listed groups and add to all existing ones
-                // HERE NOW THIS IS THE NEXT STEP
+                temp_string = args[1];
+                while (temp_string.find(",") != std::string::npos)
+                {
+                  parser_flag = false;
+		  temp_token = temp_string.substr(0, temp_string.find(","));
+                  // Only adds to users groups if the group already exists
+                  for (int i = 0; (unsigned) i < group_list.size(); i++)
+                  {
+                    if (temp_token == group_list.at(i))
+                    {
+                      parser_flag = true;
+                      user_list.back().addGroup(temp_token);
+                    }
+                  }
+                  // For every group that does not exist, inform the user
+                  if (!parser_flag)
+                  {
+                    std::cout << temp_token << ": This group does not exist. Can only add to existing groups." << std::endl;
+                  }
+                  temp_string.erase(0, temp_string.find(",") + 1);
+                }
+		parser_flag = false;
+                // Only adds to users groups if the group already exists
+                for (int i = 0;(unsigned) i < group_list.size(); i++)
+                {
+                  if (temp_string == group_list.at(i))
+                  {
+                    parser_flag = true;
+                    user_list.back().addGroup(temp_string);
+                  }
+                }
+                // For every group that does not exist, inform the user
+                if (!parser_flag)
+                {
+                  std::cout << temp_string << ": This group does not exist. Can only add to existing groups." << std::endl;
+                }
               }
             }
             else
@@ -779,40 +840,113 @@ namespace Shell //
         // Handles chuser command
         else if(command == "chuser")
         {
-             if (args.size() == 2)
+             if (args.size() == 1)
             {
               // For of "chuser <username>"
               // Change active user to one indicated if that user exists, otherwise fails
+              // Check that requested user exists
+              parser_flag = false;
+              for (int i = 0; (unsigned) i < user_list.size(); i++)
+              {
+                if (user_list.at(i).Username() == args[0])
+                {
+                  // Since user exists, change curr user to that
+                  parser_flag = true;
+                  curUser = &user_list[i];
+                  break;
+                }
+              }
+              if (!parser_flag)
+              {
+                std::cout << args[0] << " not in user list. Can only change to existing users, see help for details." << std::endl;
+              }
             }
             // Else no arguments provided
-            std::cout << "Invalid use - For help use: help chuser\n";
+            else
+            {
+              std::cout << "Invalid use - For help use: help chuser\n";
+            }
         }
         // Handles groupadd command
         else if(command == "groupadd")
         {
-            if (args.size() == 2)
+            if (args.size() == 1)
             {
               // Form of "groupadd <group>"
               // Creates new group and adds Root user to itself
+              // Checks that the group does not already exists before adding it
+              parser_flag = false;
+              for (int i = 0; (unsigned) i < group_list.size(); i++)
+              {
+                if (group_list.at(i) == args[0])
+                {
+                  parser_flag = true;
+                }
+              }
+              if (parser_flag)
+              {
+                std::cout << args[0] << " already exists" << std::endl;
+              }
+              else
+              {
+                // Adding group to group list
+                group_list.push_back(args[0]);
+		// Adding root to group
+                user_list.at(0).addGroup(args[0]);
+              }
             }
-            // Else no arguments provided
-            std::cout << "Invalid use - For help use: help groupadd\n";
+            else
+            {
+              // Else no arguments provided
+              std::cout << "Invalid use - For help use: help groupadd\n";
+            }
         }
         // Handles usermod command
         else if(command == "usermod")
         {
-            if (args.size() == 4)
+            if (args.size() == 3 && args[0] == "-g")
             {
               // Must have "usermod -g <group> <username>" format.
               // Fail if user or group doesnt exist or the user is not part of the group.
+              if (findUser(args[2]) == -1)
+              {
+                std::cout << args[2] << "is not an existing user" << std::endl;
+              }
+              else //Both user and group exist
+              {
+                // Need to check that the user already is part of the group to be able to set it to its primary
+		if (user_list.at(findUser(args[2])).contains(args[1]))
+                {
+                  user_list.at(findUser(args[2])).setPrimaryGroup(args[1]);
+                }
+                else
+                {
+                  std::cout << "User is not part of " << args[1] << " group, cannot set to primary" << std::endl;
+                }
+              }
             }
-            if (args.size() == 5)
+            else if (args.size() == 4 && args[0] == "-a" && args[1] == "-G")
             {
               // Must have "usermod -a -G <group> <username>" format.
-              // Adds indicated user to group. Fails if the user or group doesnt already exist.
+              // Adds indicated user to groups list. Fails if the user or group doesnt already exist.
+              if (findGroup(args[2]) == -1)
+              {
+                std::cout << args[2] << " is not an existing group" << std::endl;
+              }
+              else if (findUser(args[3]) == -1)
+              {
+                std::cout << args[3] << " is not an existing user" << std::endl;
+              }
+              else //Both user and group exist
+              {
+                user_list.at(findUser(args[3])).addGroup(args[2]); // Add group to users group list
+              }
             }
-            // Incorrect number of arguments provided
-            std::cout << "Invalid use - For help use: help usermod\n";
+            else
+            {
+              // Incorrect number of arguments provided
+              std::cout << "Invalid use - For help use: help usermod\n";
+            }
         }
         //Adem will need to add permission number stuff to chown when done
         else if(command == "chown")
@@ -834,7 +968,29 @@ namespace Shell //
         }
         else if(command == "groups")
         {
-            //Code for groups
+            parser_flag = false;
+            // Prints out all the groups associated with this user
+            if (args.size() == 1)
+            {
+              for (int i = 0; (unsigned) i < user_list.size(); i++)
+              {
+                if (user_list.at(i).Username() == args[0])
+                {
+                  parser_flag = true;
+                  //Print group list for that user
+                  user_list.at(i).printGroupList();
+                  break;
+                }
+              }
+              if (!parser_flag)
+              {
+                std::cout << "User does not exist" << std::endl;
+              }
+            }
+            else
+            {
+              std::cout << "Invalid use - For help use: help groups\n" << std::endl;
+            }
         }
         else if(command == "users")
         {
