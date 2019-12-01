@@ -960,11 +960,61 @@ namespace Shell //
         }
         else if(command == "userdel")
         {
-            //Code for userdel
+            //Removes user from the system if it exists and not root. Any owned objects become Root users property.
+            if (args.size() == 1)
+            {
+              if (args[0] == "root")
+              {
+                std::cout << "Root user cannot be removed" << std::endl;
+              }
+              else if (findUser(args[0]) == -1)
+              {
+                std::cout << args[0] << " is not a current existing user" << std::endl;
+              }
+              else // Not root and an existing user. Valid.
+              {
+                temp_string = curUser->Username(); // Saves current user
+                user_list.erase(user_list.begin() + findUser(args[0]) , user_list.begin() + findUser(args[0]) + 1);
+                curUser = &user_list[findUser(temp_string)]; // Fixes the curUser pointer after altering the users list
+		//ADD ALL PERMISSION SWITCHES HERE
+              }
+            }
+            else
+            {
+              std::cout << "Invalid use - For help use: help userdel\n";
+            }
         }
         else if(command == "groupdel")
         {
-            //Code for groupdel
+            //Removes an existing group from the system as long as its not root. All permissions for this group are changed to Users permissions.
+            if (args.size() == 1)
+            {
+              if (args[0] == "root")
+              {
+                std::cout << "Root group cannot be removed" << std::endl;
+              }
+              else if (findGroup(args[0]) == -1)
+              {
+                std::cout << args[0] << " is not a current existing group" << std::endl;
+              }
+              else // Not root and an existing group. Valid.
+              {
+                // Erase group from groups list
+                group_list.erase(group_list.begin() + findGroup(args[0]), group_list.begin() + findGroup(args[0]) + 1);
+		// Erase groups from users group list. If any had this group as primary, set it to Users.
+                for (int i = 0; (unsigned) i < user_list.size(); i++)
+                {
+                  user_list.at(i).removeGroup(args[0]);
+                }
+                // Switch permissions of anything belonging to this group to Users group
+                // STUFF NEEDED IMPLEMENTING STILL
+              }
+            }
+            else
+            {
+              std::cout << "Invalid use - For help use: help groupdel\n";
+            }
+
         }
         else if(command == "groups")
         {

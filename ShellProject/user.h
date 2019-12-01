@@ -42,6 +42,11 @@ namespace Shell
           if (group_list.at(i) == group_name)
           {
             group_list.erase(group_list.begin() + i);
+            // If the primary group was this then it will set it to be Users by default
+            if (primary_group == group_name)
+            {
+              primary_group = "Users";
+            }
             break;
           }
         }
