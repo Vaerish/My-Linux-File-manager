@@ -983,6 +983,34 @@ namespace Shell //
 		//ADD ALL PERMISSION SWITCHES HERE
               }
             }
+            //Removes listed user from indicated group. Fails if either doen't exist or user is not part of the group, the group is Users, or the user is Root
+            else if (args.size() == 3 && args[0] == "-G")
+            {
+              if (findUser(args[2]) == -1) // Makes sure user exists
+              {
+                std::cout << args[2] << " is not an existing user" << std::endl;
+              }
+              else if (findGroup(args[1]) == -1) // Makes sure group exists
+              {
+                std::cout << args[1] << " is not an existing group" << std::endl;
+              }
+              else if (!user_list.at(findUser(args[2])).contains(args[1])) // Make sure user is part of group
+              {
+                std::cout << args[2] << " is not part of that group" << std::endl;
+              }
+              else if (args[1] == "Users")
+              {
+                std::cout << "Cannot remove User group from any user" << std::endl;
+              }
+              else if (args[2] == "root")
+              {
+                std::cout << "Cannot remove root from any group" << std::endl;
+              }
+              else // Valid, remove user from group
+              {
+                user_list.at(findUser(args[2])).removeGroup(args[1]);
+              }
+            }
             else
             {
               std::cout << "Invalid use - For help use: help userdel\n";
