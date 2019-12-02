@@ -8,6 +8,10 @@
 
 using namespace std;
 
+extern bool doneCore;
+extern int times;
+
+
 struct Process
 {
     Process() : isDone(false), totalTimeNeeded(-1), timeScheduled(0), startTime(-1), timeFinished(-1) {}

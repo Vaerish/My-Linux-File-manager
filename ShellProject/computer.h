@@ -10,6 +10,10 @@
 
 #ifndef COMPUTER_H
 #define COMPUTER_H
+extern bool doneCore;
+extern vector<Process> core1;
+extern vector<Process> core2;
+extern int times;
 
 namespace Shell //
 {
@@ -1138,9 +1142,9 @@ namespace Shell //
                   {
                     
                     Process p;
-                    p.id = program;
-                    p.startTime = std::chrono::system_clock::now();
-                    p.totalTimeNeeded = file.time_run; //this makes it between ten and 50 units long
+                    p.id = file->name;
+                    p.startTime = times;
+                    p.totalTimeNeeded = file->time_run; //this makes it between ten and 50 units long
                     if(firstCore)
                     {
                       core1.push_back(p);
