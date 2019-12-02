@@ -1,11 +1,14 @@
 #include "schedulers.h"
+#include <random>
 //Round Robin scheduler implementation. In general, this function maintains a double ended queue
 //of processes that are candidates for scheduling (the ready variable) and always schedules
 //the first process on that list, if available (i.e., if the list has members)
-vector<Process> suspend;
-vector<Process> block;
-vector<Process> waiting;
-int FirstComeFirstServe(const int& curTime, const vector<Process>& procList, const int& timeQuantum)
+#include "schedulers.h"
+
+//Round Robin scheduler implementation. In general, this function maintains a double ended queue
+//of processes that are candidates for scheduling (the ready variable) and always schedules
+//the first process on that list, if available (i.e., if the list has members)
+int RoundRobin(const int& curTime, const vector<Process>& procList, const int& timeQuantum)
 {
     static int timeToNextSched = timeQuantum;  //keeps track of when we should actually schedule a new process
     static deque<int> ready;  //keeps track of the processes that are ready to be scheduled
@@ -62,29 +65,269 @@ int FirstComeFirstServe(const int& curTime, const vector<Process>& procList, con
     return idx;
 }
 
-void runner()
+
+int SPN(const int& curTime, const vector<Process>& procList, const int& timeQuantum)
 {
-  int curTime = 0, input, schedChoice, numProc, procIdx, timeQuantum;
-  bool done;
-  string tempStr;
-  done = false;
-  curTime = 0;
-  procIdx = -1;
-  while(!done)
-  {
-    //need to add in the random part and move where it is needed then we should be mostly good
-        
-    procIdx = RoundRobin(curTime, procList, timeQuantum);
-    if(procIdx >= 0 && procIdx < procList.size())
+    static int timeToNextSched = timeQuantum;  //keeps track of when we should actually schedule a new process
+    static vector<int> ready;  //keeps track of the processes that are ready to be scheduled
+
+    int idx = -1, chk;
+    bool done;
+
+    int i_end;
+    for(int i = 0, i_end = procList.size(); i < i_end; ++i)
+    {
+        if(procList[i].startTime == curTime)
         {
-            //update the details for the scheduled process
-        ++procList[procIdx].timeScheduled;
-        if(procList[procIdx].totalTimeNeeded == procList[procIdx].timeScheduled)
-        {
-            procList[procIdx].isDone = true;
-            procList[procIdx].timeFinished = curTime;
+            ready.push_back(i);
         }
     }
+    if(procList[ready[0]].isDone)
+    {
+   
+        ready.erase(ready.begin());
+        int size = procList[ready[0]].totalTimeNeeded;
+        int place = 0;
+        int input = ready[0];
+        int start = procList[ready[0]].startTime;
+
+    
+
+    if(ready.size() > 0)
+    {
+
+        for(int i = 0; i < ready.size(); i++)
+        {
+            if(procList[ready[i]].totalTimeNeeded < size || ((procList[ready[i]].totalTimeNeeded == size) && procList[ready[i]].startTime < start))
+            {
+                
+                place = i;
+                size = procList[ready[i]].totalTimeNeeded;
+                input = ready[i];
+                start = procList[ready[i]].startTime;
+            }
+        }
+        ready.emplace(ready.begin(), input);
+        ready.erase(ready.begin() + place +1);
+        
+
+        }
+    }
+
+    if(ready.size() > 0)
+    {
        
-   }
+        idx = ready[0];
+     
+    }
+    else
+    {
+        
+        idx = -1;
+    
+    }
+
+    return idx;
+}
+
+
+
+int SRT(const int& curTime, const vector<Process>& procList, const int& timeQuantum)
+{
+    static int timeToNextSched = timeQuantum;  //keeps track of when we should actually schedule a new process
+    static vector<int> ready;  //keeps track of the processes that are ready to be scheduled
+
+    int idx = -1, chk;
+    bool done;
+
+    // first look through the process list and find any processes that are newly ready and
+    // add them to the back of the ready queue
+    for(int i = 0, i_end = procList.size(); i < i_end; ++i)
+    {
+        if(procList[i].startTime == curTime)
+        {
+            ready.push_back(i);
+        }
+    }
+    if(procList[ready[0]].isDone)
+    {
+        ready.erase(ready.begin());
+    }
+    int shortestTime = procList[ready[0]].totalTimeNeeded - procList[ready[0]].timeScheduled;
+    int theirTime;
+    int place = 0;
+    bool switched = false;
+    for(int i = 0; i < ready.size(); i++)
+    {
+
+        theirTime = procList[ready[i]].totalTimeNeeded - procList[ready[i]].timeScheduled;
+        if(shortestTime > theirTime && theirTime != 0)
+        {
+            place = i;
+            switched = true;
+            shortestTime = theirTime; 
+            
+        }
+        else if(shortestTime == 0)
+        {
+            place = i;
+            switched = true;
+            shortestTime = theirTime; 
+            
+        }
+    }
+
+    if(switched)
+    {
+      
+        ready.insert(ready.begin(), ready[place]);
+
+        
+    }
+
+    // if the ready queue has any processes on it
+    if(ready.size() > 0)
+    {
+        // grab the front process and decrement the time to next scheduling
+        idx = ready[0];
+        --timeToNextSched;
+    }
+    // if the ready queue has no processes on it
+    else
+    {
+        // send back an invalid process index and set the time to next scheduling
+        // value so that we try again next time step
+        idx = -1;
+        timeToNextSched = 0;
+    }
+
+    // return back the index of the process to schedule next
+    return idx;
+}
+
+int HRR(const int& curTime, const vector<Process>& procList, const int& timeQuantum)
+{
+    static int timeToNextSched = timeQuantum;  //keeps track of when we should actually schedule a new process
+    static vector<int> ready;  //keeps track of the processes that are ready to be scheduled
+
+    int idx = -1, chk;
+    bool done;
+
+    for(int i = 0, i_end = procList.size(); i < i_end; ++i)
+    {
+        if(procList[i].startTime == curTime)
+        {
+            ready.push_back(i);
+        }
+    }
+
+
+    if(procList[ready[0]].isDone)
+    {
+        ready.erase(ready.begin());
+        if(ready.size() > 0)
+        {
+        int size = procList[0].totalTimeNeeded;
+        float chosenRatio = (float((procList[ready[0]].totalTimeNeeded)+(curTime -(procList[ready[0]].startTime)))/float(procList[ready[0]].totalTimeNeeded));
+        float theirRatio;
+        int place = 0;
+
+ 
+        for(int i = 0; i < ready.size(); i++)
+        {
+            theirRatio = (float((procList[ready[i]].totalTimeNeeded) + (curTime-(procList[ready[i]].startTime))) / float(procList[ready[i]].totalTimeNeeded));
+            if(theirRatio > chosenRatio || chosenRatio == 0)
+            {
+                idx = ready[i];
+                place = i;
+                chosenRatio = theirRatio;
+            }
+        }
+        ready.insert(ready.begin(), ready[place]);
+        ready.erase(ready.begin() + place + 1);
+        }
+    }
+    // if the ready queue has no processes on it
+    if(ready.size() > 0)
+    {
+        // grab the front process and decrement the time to next scheduling
+        idx = ready[0];
+        --timeToNextSched;
+    }
+
+    else
+    {
+
+        idx = -1;
+        timeToNextSched = 0;
+    }
+
+    return idx;
+}
+
+void runner(vector<Process>& procList) //this is our two threads
+{
+  int curTime = 0, input, schedChoice, numProc, procIdx, timeQuantum;
+  curTime = 0;
+  procIdx = -1;
+  schedChoice = -1;
+   
+    curTime = 0;
+
+    //while not all processes have completed: or while computer is not shut down
+    while(doneCore)
+    {
+        //get the process to schedule next using the indicated scheduler
+        procIdx = -1;
+        switch(schedChoice)
+        {
+            //Round Robin
+            case 1:
+                procIdx = RoundRobin(curTime, procList, timeQuantum);
+                break;
+
+            //Shortest Process Next
+            case 2:
+
+
+                
+                procIdx = SPN(curTime, procList, timeQuantum);
+            
+
+
+                break;
+
+            //Shortest Remaining Time
+            case 3:
+
+
+                procIdx = SRT(curTime, procList, timeQuantum);
+
+
+                break;
+
+            //Highest Response Ratio Next
+            case 4:
+
+
+                // TODO set procIdx to the proper index for the next process to be scheduled using HRRN
+                procIdx = HRR(curTime, procList, timeQuantum);
+
+
+                break;
+        }
+
+        //if we were given a valid process index
+        if(procIdx >= 0 && procIdx < procList.size())
+        {
+            //update the details for the scheduled process
+            ++procList[procIdx].timeScheduled;
+            if(procList[procIdx].totalTimeNeeded == procList[procIdx].timeScheduled)
+            {
+                procList[procIdx].isDone = true;
+                procList[procIdx].timeFinished = curTime;
+            }
+
+        }
+    }
 }

@@ -54,8 +54,6 @@ namespace Shell
       std::array<int, 3> perms;
       // the randomly decided run time
       int time_run;
-      // the time it needs to wait
-      int timeWait = 0;
       // friends with a computer
       friend Computer;
     public:
@@ -74,10 +72,6 @@ namespace Shell
         size = s;
         perms = DEFAULT_PERM;
         time_run = rand() % 40 + 10;
-        if(time_run == 13)
-        {
-          timeWait = rand() % 13 + 1;
-        }
       }
       Node(std::string n, bool dir, Node* p) : Node(n, dir, p, 1, p->user, p->group) { }
       // deconstructor

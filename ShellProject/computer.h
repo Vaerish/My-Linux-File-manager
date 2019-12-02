@@ -38,6 +38,8 @@ namespace Shell //
       std::string temp_string = "";
       std::string temp_token = "";
       vector<Process> procList;
+      //whether it is in first or second core
+      bool firstCore = true;
 
     // Public functions
     public:
@@ -122,6 +124,7 @@ namespace Shell //
           std::getline(std::cin, input);
           // Parse it and handle it.
           looping = parser(input);
+          doneCore = looping;
         }
       }
       //Returns -1 if user cannot be found or returns the index
@@ -1138,8 +1141,17 @@ namespace Shell //
                     p.id = program;
                     p.startTime = std::chrono::system_clock::now();
                     p.totalTimeNeeded = file.time_run; //this makes it between ten and 50 units long
-                    p.timeBlocked = file.timeWait;
-                    runner(p);
+                    if(firstCore)
+                    {
+                      core1.push_back(p);
+                      firstCore = false;
+                    }
+                    else
+                    {
+                      core2.push_back(p);
+                      firstCore = true;
+                    }
+                    
                   }
                   else
                   {
