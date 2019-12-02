@@ -5,9 +5,12 @@
 #include <sstream>
 #include <map>
 #include <string>
+#include <random>
+#include "schedulers.h"
 
 #ifndef COMPUTER_H
 #define COMPUTER_H
+
 namespace Shell //
 {
   const std::string CMDS[] = {"", "ls", "pwd", "exit", "mkdir", "touch", "cd", "rm", "rmdir", "chmod"};
@@ -34,6 +37,7 @@ namespace Shell //
       // String used to hold temporary strings
       std::string temp_string = "";
       std::string temp_token = "";
+      vector<Process> procList;
 
     // Public functions
     public:
@@ -1101,10 +1105,13 @@ namespace Shell //
                   }
                   if (PermissionSection.find('x') != std::string::npos)
                   {
-                    //Code for run!
-                    //Code for run!
-                    //Code for run!
-                    //Code for run!
+                    
+                    Process p;
+                    p.id = program;
+                    p.startTime = std::chrono::system_clock::now();
+                    p.totalTimeNeeded = file.time_run; //this makes it between ten and 50 units long
+                    p.timeBlocked = file.timeWait;
+                    runner(p);
                   }
                   else
                   {
