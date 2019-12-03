@@ -188,7 +188,7 @@ namespace Shell //
               // display output
 
               std::string PermissionSection = curDir->PermsStr();
-              if(curUser->Username() == "Root")
+              if(curUser->Username() == "root")
               {
                 PermissionSection = "rwx";
               }
@@ -232,7 +232,7 @@ namespace Shell //
           else
           {
             std::string PermissionSection = curDir->PermsStr();
-            if(curUser->Username() == "Root")
+            if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
             }
@@ -293,7 +293,7 @@ namespace Shell //
           else
           {
             std::string PermissionSection = curDir->PermsStr();
-            if(curUser->Username() == "Root")
+            if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
             }
@@ -340,7 +340,7 @@ namespace Shell //
           else
           {
             std::string PermissionSection = curDir->PermsStr();
-            if(curUser->Username() == "Root")
+            if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
             }
@@ -365,7 +365,7 @@ namespace Shell //
                 if(!curDir->AddChild(new Node(arg, false, curDir)))
                 {
                     std::string PermissionSection = curDir->children[arg]->PermsStr();
-                    if(curUser->Username() == "Root")
+                    if(curUser->Username() == "root")
                     {
                       PermissionSection = "rwx";
                     }
@@ -429,7 +429,7 @@ namespace Shell //
               else
               {
                 std::string PermissionSection = file->PermsStr();
-                if(curUser->Username() == "Root")
+                if(curUser->Username() == "root")
                 {
                   PermissionSection = "rwx";
                 }
@@ -472,7 +472,7 @@ namespace Shell //
           else
           {
             std::string PermissionSection = curDir->PermsStr();
-            if(curUser->Username() == "Root")
+            if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
             }
@@ -534,7 +534,7 @@ namespace Shell //
           else
           {
             std::string PermissionSection = curDir->PermsStr();
-            if(curUser->Username() == "Root")
+            if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
             }
@@ -651,7 +651,7 @@ namespace Shell //
                   else
                   {
                     std::string PermissionSection = file->PermsStr();
-                    if(curUser->Username() == "Root")
+                    if(curUser->Username() == "root")
                     {
                       PermissionSection = "rwx";
                     }
@@ -723,7 +723,7 @@ namespace Shell //
                 else
                 {
                   std::string PermissionSection = file->PermsStr();
-                  if(curUser->Username() == "Root")
+                  if(curUser->Username() == "root")
                   {
                     PermissionSection = "rwx";
                   }
@@ -1122,7 +1122,7 @@ namespace Shell //
                 else
                 {
                   std::string PermissionSection = file->PermsStr();
-                  if(curUser->Username() == "Root")
+                  if(curUser->Username() == "root")
                   {
                     PermissionSection = "rwx";
                   }
