@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <thread>
+#include <chrono>
 #include <condition_variable>
 #include "computer.h"
 #include "node.h"
@@ -32,10 +33,11 @@ void runner(vector<Process>& procList) //this is our two threads
     //while not all processes have completed: or while computer is not shut down
     while(doneCore)
     {
+    	std::this_thread::sleep_for (std::chrono::milliseconds(100));
         //get the process to schedule next using the indicated scheduler
         procIdx = -1;
         int sizeNotDone = 0;
-        for(int i = 0; i < procList.size(); i++)
+        for(unsigned int i = 0; i < procList.size(); i++)
         {
         	if(!procList[i].isDone)
         	{

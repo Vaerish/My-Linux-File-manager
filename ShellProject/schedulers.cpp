@@ -21,7 +21,7 @@ int RoundRobin(const int& curTime, const vector<Process>& procList, const int& t
     // add them to the back of the ready queue
     for(int i = 0, i_end = procList.size(); i < i_end; ++i)
     {
-        if(procList[i].startTime < curTime)
+        if(procList[i].startTime < curTime && procList[i].isDone == false)
         {
             found = false;
             for(int j = 0; j < ready.size(); j++)
@@ -91,7 +91,7 @@ int SPN(const int& curTime, const vector<Process>& procList, const int& timeQuan
     int i_end;
     for(int i = 0, i_end = procList.size(); i < i_end; ++i)
     {
-        if(procList[i].startTime < curTime)
+        if(procList[i].startTime < curTime && procList[i].isDone == false)
         {
             found = false;
             for(int j = 0; j < ready.size(); j++)
@@ -168,7 +168,7 @@ int FCFS(const int& curTime, const vector<Process>& procList, const int& timeQua
     int i_end;
     for(int i = 0, i_end = procList.size(); i < i_end; ++i)
     {
-        if(procList[i].startTime < curTime)
+        if(procList[i].startTime < curTime && procList[i].isDone == false)
         {
             found = false;
             for(int j = 0; j < ready.size(); j++)
@@ -222,7 +222,7 @@ int SRT(const int& curTime, const vector<Process>& procList, const int& timeQuan
     // add them to the back of the ready queue
     for(int i = 0, i_end = procList.size(); i < i_end; ++i)
     {
-        if(procList[i].startTime < curTime)
+        if(procList[i].startTime < curTime && procList[i].isDone == false)
         {
             found = false;
             for(int j = 0; j < ready.size(); j++)
@@ -304,7 +304,7 @@ int HRR(const int& curTime, const vector<Process>& procList, const int& timeQuan
 
    for(int i = 0, i_end = procList.size(); i < i_end; ++i)
     {
-        if(procList[i].startTime < curTime)
+        if(procList[i].startTime < curTime && procList[i].isDone == false)
         {
             found = false;
             for(int j = 0; j < ready.size(); j++)
