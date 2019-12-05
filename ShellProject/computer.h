@@ -948,15 +948,50 @@ namespace Shell //
               std::cout << "Invalid use - For help use: help usermod\n";
             }
         }
-        //Adem will need to add permission number stuff to chown when done
+        //Adem will need to add permission number stuff to chown when done - Marked below
         else if(command == "chown")
         {
-            //Code for chown
+            //Changes the owner of the indicated object to the indicated user. Fails if user or object doesnt exist or user doesnt have write permissions. 
+	    if (args.size() == 2)
+            {
+              //Check that the user exists
+              if (findUser(args[0]) == -1)
+              {
+                std::cout << args[0] << " is not an existing user" << std::endl;
+              }
+              //Check that the object exists
+              else if (true)
+              {
+                std::cout << args[1] << " is not an existing file or directory" << std::endl;
+              }
+              // Try and switch owner of object
+              else
+              {
+                //Check that the active user has correct permissions - PERMISSIONS HERE
+
+                //Set owner of object to specified user
+                
+              }
+            }
+            else
+            {
+              std::cout << "Invalid use - For help use: help chown\n";
+            }
         }
-        //Adem will need to add permission number stuff to chgrp when done
+        //Adem will need to add permission number stuff to chgrp when done - Marked below
         else if(command == "chgrp")
         {
-            //Code for chgrp
+            //Change group of the indicated object to indicated group. Fails if object or user doesnt exist as well as user not having permissins
+            if (args.size() == 2)
+            {
+              //Check that the user exists
+              //Check that the object exists
+              //Check that the active user has correct permissions - PERMISSIONS HERE
+            }
+            else
+            {
+              std::cout << "Invalid use - For help use: help chgrp\n";
+            }
         }
         else if(command == "userdel")
         {
