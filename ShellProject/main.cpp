@@ -11,31 +11,45 @@
 #include "node.h"
 
 #include "schedulers.h"    // scheduler function(s) and data objects
+
+using namespace std;
 vector<Process> core1;
 vector<Process> core2;
+vector<string> schedHist;
 
 bool doneCore;
-int times;
+int times = 0;
+int schedCh = 1;
+bool accessed = false;
 void runner(vector<Process>& procList) //this is our two threads
 {
-  int curTime = 0, input, schedChoice, numProc, procIdx, timeQuantum;
+  int schedChoice,  timeQuantum;
+  unsigned int procIdx;
   timeQuantum = 2;
-  curTime = 0;
   procIdx = -1;
-  schedChoice = -1;
-   
-    curTime = 0;
+  schedChoice = schedCh;
 
     //while not all processes have completed: or while computer is not shut down
     while(doneCore)
     {
         //get the process to schedule next using the indicated scheduler
         procIdx = -1;
+        int sizeNotDone = 0;
+        for(int i = 0; i < procList.size(); i++)
+        {
+        	if(!procList[i].isDone)
+        	{
+        		sizeNotDone++;
+        	}
+        }
+        
+        if(sizeNotDone > 0) //to ensure there is actually something to schedule
+        {
         switch(schedChoice)
         {
             //Round Robin
             case 1:
-                procIdx = RoundRobin(curTime, procList, timeQuantum);
+                procIdx = RoundRobin(times, procList, timeQuantum);
                 break;
 
             //Shortest Process Next
@@ -43,7 +57,7 @@ void runner(vector<Process>& procList) //this is our two threads
 
 
                 
-                procIdx = SPN(curTime, procList, timeQuantum);
+                procIdx = SPN(times, procList, timeQuantum);
             
 
 
@@ -53,7 +67,7 @@ void runner(vector<Process>& procList) //this is our two threads
             case 3:
 
 
-                procIdx = SRT(curTime, procList, timeQuantum);
+                procIdx = SRT(times, procList, timeQuantum);
 
 
                 break;
@@ -63,14 +77,18 @@ void runner(vector<Process>& procList) //this is our two threads
 
 
                 // TODO set procIdx to the proper index for the next process to be scheduled using HRRN
-                procIdx = HRR(curTime, procList, timeQuantum);
+                procIdx = HRR(times, procList, timeQuantum);
 
 
                 break;
+            case 5:
+            	procIdx = FCFS(times, procList, timeQuantum);
+            	break;
         }
-        curTime++;
-        times = curTime;
-
+        
+    	}
+        
+        
         //if we were given a valid process index
         if(procIdx >= 0 && procIdx < procList.size())
         {
@@ -79,11 +97,26 @@ void runner(vector<Process>& procList) //this is our two threads
             if(procList[procIdx].totalTimeNeeded == procList[procIdx].timeScheduled)
             {
                 procList[procIdx].isDone = true;
-                procList[procIdx].timeFinished = curTime;
+                procList[procIdx].timeFinished = times;
             }
+            while(accessed)
+            {
+            	int i = 1;
+            	i++;
+            }
+            accessed = true;
+            schedHist.push_back(to_string(times) + " - " + procList[procIdx].id);
+            accessed = false;
+
 
         }
+    	
+    	if(sizeNotDone > 0 )
+    	{
+    		times++;
+    	}
     }
+   
 }
 int main()
 {

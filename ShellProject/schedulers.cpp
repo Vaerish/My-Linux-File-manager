@@ -15,14 +15,27 @@ int RoundRobin(const int& curTime, const vector<Process>& procList, const int& t
 
     int idx = -1, chk;
     bool done;
+    bool found;
 
     // first look through the process list and find any processes that are newly ready and
     // add them to the back of the ready queue
     for(int i = 0, i_end = procList.size(); i < i_end; ++i)
     {
-        if(procList[i].startTime == curTime)
+        if(procList[i].startTime < curTime)
         {
-            ready.push_back(i);
+            found = false;
+            for(int j = 0; j < ready.size(); j++)
+            {
+                if(ready[j] == i)
+                {
+                    found = true;
+                }
+            }
+            if(!found)
+            {
+                ready.push_back(i);
+            }
+            
         }
     }
 
@@ -73,13 +86,26 @@ int SPN(const int& curTime, const vector<Process>& procList, const int& timeQuan
 
     int idx = -1, chk;
     bool done;
+    bool found;
 
     int i_end;
     for(int i = 0, i_end = procList.size(); i < i_end; ++i)
     {
-        if(procList[i].startTime == curTime)
+        if(procList[i].startTime < curTime)
         {
-            ready.push_back(i);
+            found = false;
+            for(int j = 0; j < ready.size(); j++)
+            {
+                if(ready[j] == i)
+                {
+                    found = true;
+                }
+            }
+            if(!found)
+            {
+                ready.push_back(i);
+            }
+            
         }
     }
     if(procList[ready[0]].isDone)
@@ -130,6 +156,57 @@ int SPN(const int& curTime, const vector<Process>& procList, const int& timeQuan
     return idx;
 }
 
+int FCFS(const int& curTime, const vector<Process>& procList, const int& timeQuantum)
+{
+    static int timeToNextSched = timeQuantum;  //keeps track of when we should actually schedule a new process
+    static vector<int> ready;  //keeps track of the processes that are ready to be scheduled
+
+    int idx = -1, chk;
+    bool done;
+    bool found;
+
+    int i_end;
+    for(int i = 0, i_end = procList.size(); i < i_end; ++i)
+    {
+        if(procList[i].startTime < curTime)
+        {
+            found = false;
+            for(int j = 0; j < ready.size(); j++)
+            {
+                if(ready[j] == i)
+                {
+                    found = true;
+                }
+            }
+            if(!found)
+            {
+                ready.push_back(i);
+            }
+            
+        }
+    }
+    if(procList[ready[0]].isDone)
+    {
+   
+        ready.erase(ready.begin());
+    }
+
+
+    if(ready.size() > 0)
+    {
+       
+        idx = ready[0];
+    }
+    else
+    {
+        
+        idx = -1;
+    
+    }
+
+    return idx;
+}
+
 
 
 int SRT(const int& curTime, const vector<Process>& procList, const int& timeQuantum)
@@ -139,14 +216,27 @@ int SRT(const int& curTime, const vector<Process>& procList, const int& timeQuan
 
     int idx = -1, chk;
     bool done;
+    bool found;
 
     // first look through the process list and find any processes that are newly ready and
     // add them to the back of the ready queue
     for(int i = 0, i_end = procList.size(); i < i_end; ++i)
     {
-        if(procList[i].startTime == curTime)
+        if(procList[i].startTime < curTime)
         {
-            ready.push_back(i);
+            found = false;
+            for(int j = 0; j < ready.size(); j++)
+            {
+                if(ready[j] == i)
+                {
+                    found = true;
+                }
+            }
+            if(!found)
+            {
+                ready.push_back(i);
+            }
+            
         }
     }
     if(procList[ready[0]].isDone)
@@ -209,14 +299,26 @@ int HRR(const int& curTime, const vector<Process>& procList, const int& timeQuan
 {
     static int timeToNextSched = timeQuantum;  //keeps track of when we should actually schedule a new process
     static vector<int> ready;  //keeps track of the processes that are ready to be scheduled
-
+    bool found;
     int idx = -1;
 
-    for(int i = 0, i_end = procList.size(); i < i_end; ++i)
+   for(int i = 0, i_end = procList.size(); i < i_end; ++i)
     {
-        if(procList[i].startTime == curTime)
+        if(procList[i].startTime < curTime)
         {
-            ready.push_back(i);
+            found = false;
+            for(int j = 0; j < ready.size(); j++)
+            {
+                if(ready[j] == i)
+                {
+                    found = true;
+                }
+            }
+            if(!found)
+            {
+                ready.push_back(i);
+            }
+            
         }
     }
 

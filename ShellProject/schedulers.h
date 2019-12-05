@@ -25,6 +25,7 @@ struct Process
     bool isDone;          //Indicates if the process is complete
     int timeScheduled;    //The amount of time the process has been scheduled so far
     int timeFinished;     //The time that the process completed
+    std::string user; 
 };
 
 
@@ -56,5 +57,6 @@ int SPN(const int& curTime, const vector<Process>& procList, const int& timeQuan
 int SRT(const int& curTime, const vector<Process>& procList, const int& timeQuantum);
 
 int HRR(const int& curTime, const vector<Process>& procList, const int& timeQuantum);
+int FCFS(const int& curTime, const vector<Process>& procList, const int& timeQuantum);
 
 #endif
