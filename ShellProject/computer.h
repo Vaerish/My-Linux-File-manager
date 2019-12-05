@@ -5,9 +5,17 @@
 #include <sstream>
 #include <map>
 #include <string>
+#include <random>
+#include "schedulers.h"
 
 #ifndef COMPUTER_H
 #define COMPUTER_H
+extern bool doneCore;
+extern vector<Process> core1;
+extern vector<Process> core2;
+extern int times;
+extern vector<string> schedHist;
+
 namespace Shell //
 {
   const std::string CMDS[] = {"", "ls", "pwd", "exit", "mkdir", "touch", "cd", "rm", "rmdir", "chmod"};
@@ -34,6 +42,9 @@ namespace Shell //
       // String used to hold temporary strings
       std::string temp_string = "";
       std::string temp_token = "";
+      vector<Process> procList;
+      //whether it is in first or second core
+      bool firstCore = true;
 
     // Public functions
     public:
@@ -118,6 +129,7 @@ namespace Shell //
           std::getline(std::cin, input);
           // Parse it and handle it.
           looping = parser(input);
+          doneCore = looping;
         }
       }
       //Returns -1 if user cannot be found or returns the index
@@ -177,7 +189,7 @@ namespace Shell //
               // display output
 
               std::string PermissionSection = curDir->PermsStr();
-              if(curUser->Username() == "Root")
+              if(curUser->Username() == "root")
               {
                 PermissionSection = "rwx";
               }
@@ -221,7 +233,7 @@ namespace Shell //
           else
           {
             std::string PermissionSection = curDir->PermsStr();
-            if(curUser->Username() == "Root")
+            if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
             }
@@ -282,7 +294,7 @@ namespace Shell //
           else
           {
             std::string PermissionSection = curDir->PermsStr();
-            if(curUser->Username() == "Root")
+            if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
             }
@@ -329,7 +341,7 @@ namespace Shell //
           else
           {
             std::string PermissionSection = curDir->PermsStr();
-            if(curUser->Username() == "Root")
+            if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
             }
@@ -354,7 +366,7 @@ namespace Shell //
                 if(!curDir->AddChild(new Node(arg, false, curDir)))
                 {
                     std::string PermissionSection = curDir->children[arg]->PermsStr();
-                    if(curUser->Username() == "Root")
+                    if(curUser->Username() == "root")
                     {
                       PermissionSection = "rwx";
                     }
@@ -418,7 +430,7 @@ namespace Shell //
               else
               {
                 std::string PermissionSection = file->PermsStr();
-                if(curUser->Username() == "Root")
+                if(curUser->Username() == "root")
                 {
                   PermissionSection = "rwx";
                 }
@@ -461,7 +473,7 @@ namespace Shell //
           else
           {
             std::string PermissionSection = curDir->PermsStr();
-            if(curUser->Username() == "Root")
+            if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
             }
@@ -523,7 +535,7 @@ namespace Shell //
           else
           {
             std::string PermissionSection = curDir->PermsStr();
-            if(curUser->Username() == "Root")
+            if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
             }
@@ -640,7 +652,7 @@ namespace Shell //
                   else
                   {
                     std::string PermissionSection = file->PermsStr();
-                    if(curUser->Username() == "Root")
+                    if(curUser->Username() == "root")
                     {
                       PermissionSection = "rwx";
                     }
@@ -712,7 +724,7 @@ namespace Shell //
                 else
                 {
                   std::string PermissionSection = file->PermsStr();
-                  if(curUser->Username() == "Root")
+                  if(curUser->Username() == "root")
                   {
                     PermissionSection = "rwx";
                   }
@@ -1146,7 +1158,7 @@ namespace Shell //
                 else
                 {
                   std::string PermissionSection = file->PermsStr();
-                  if(curUser->Username() == "Root")
+                  if(curUser->Username() == "root")
                   {
                     PermissionSection = "rwx";
                   }
@@ -1164,10 +1176,23 @@ namespace Shell //
                   }
                   if (PermissionSection.find('x') != std::string::npos)
                   {
-                    //Code for run!
-                    //Code for run!
-                    //Code for run!
-                    //Code for run!
+                    
+                    Process p;
+                    p.id = file->name;
+                    p.startTime = times;
+                    p.totalTimeNeeded = file->time_run; //this makes it between ten and 50 units long
+                    p.user = file->user;
+                    if(firstCore)
+                    {
+                      core1.push_back(p);
+                      firstCore = false;
+                    }
+                    else
+                    {
+                      core2.push_back(p);
+                      firstCore = true;
+                    }
+                    
                   }
                   else
                   {
@@ -1179,15 +1204,102 @@ namespace Shell //
         }
         else if(command == "ps")
         {
-            //Code for ps
+            for(unsigned int i = 0; i < core1.size(); i++)
+            {
+              if(!core1[i].isDone)
+              {
+                cout << core1[i].id <<  " " << core1[i].user << " " << core1[i].startTime << " " << core1[i].timeScheduled << " "<< core1[i].totalTimeNeeded << endl;
+              }
+            }
+            for(unsigned int i = 0; i < core2.size(); i++)
+            {
+              if(!core2[i].isDone)
+              {
+                cout << core2[i].id << " " << core2[i].user << " " << core2[i].startTime << " " << core2[i].timeScheduled << " "<< core2[i].totalTimeNeeded << endl;
+              }
+            }
         }
         else if(command == "kill")
         {
-            //Code for kill
+          if(args.size() == 0)
+          {
+            // error
+            std::cout << "run: Invalid use";
+          }
+          // else if there are args
+          else
+          {
+              // iterate over them
+              for(auto arg : args)
+              {
+                // try to find the arg
+                Node* file = findFile(arg);
+                // if it doesn't exist, error
+                if(file == nullptr)
+                {
+                  std::cout << "kill: File '" << arg << "' not found\n";
+                }
+                // if file is a directory
+                else if(file->isDir)
+                {
+                  // error
+                  std::cout << "kill: cannot execute '" << arg 
+                            << "': Is a directory\n";
+                }
+                // else is valid so execute
+                else
+                {
+                  std::string PermissionSection = file->PermsStr();
+                  if(curUser->Username() == "root")
+                  {
+                    PermissionSection = "rwx";
+                  }
+                  else if(curUser->Username() == file->User())
+                  {
+                    PermissionSection = PermissionSection.substr(1,3);
+                  }
+                  else if(curUser->Group() == file->Group())
+                  {
+                    PermissionSection = PermissionSection.substr(4,3);
+                  }
+                  else
+                  {
+                    PermissionSection = PermissionSection.substr(7,3);
+                  }
+                  if (PermissionSection.find('x') != std::string::npos)
+                  {
+                    
+                    for(unsigned int i = 0; i < core1.size(); i++)
+                  {
+                  if(core1[i].id == file->name)
+                    {
+                    core1[i].isDone = true;
+              }
+            }
+            for(unsigned int i = 0; i < core2.size(); i++)
+            {
+              if(core2[i].id == file->name)
+              {
+                core2[i].isDone = true;
+              }
+            }
+                    
+                  }
+                  else
+                  {
+                    std::cout << "Permission Denied" << std::endl;
+                  }
+                }
+              }
+          }
+            
         }
         else if(command == "schedHist")
         {
-            //Code for schedHist
+            for(unsigned int i = 0; i < schedHist.size(); i++)
+            {
+              cout << schedHist[i] << endl;
+            }
         }
         //Node stuff maybe?
         //

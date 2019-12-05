@@ -52,6 +52,8 @@ namespace Shell
       tm timeStamp;
       // permissions
       std::array<int, 3> perms;
+      // the randomly decided run time
+      int time_run;
       // friends with a computer
       friend Computer;
     public:
@@ -69,6 +71,7 @@ namespace Shell
         group = g;
         size = s;
         perms = DEFAULT_PERM;
+        time_run = rand() % 40 + 10;
       }
       Node(std::string n, bool dir, Node* p) : Node(n, dir, p, 1, p->user, p->group) { }
       // deconstructor
