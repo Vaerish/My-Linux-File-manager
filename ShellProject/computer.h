@@ -966,13 +966,14 @@ namespace Shell //
             //Changes the owner of the indicated object to the indicated user. Fails if user or object doesnt exist or user doesnt have write permissions. 
 	    if (args.size() == 2)
             {
+              Node* file = findFile(args[1]);
               //Check that the user exists
               if (findUser(args[0]) == -1)
               {
                 std::cout << args[0] << " is not an existing user" << std::endl;
               }
               //Check that the object exists
-              else if (true)
+              else if (file == nullptr)
               {
                 std::cout << args[1] << " is not an existing file or directory" << std::endl;
               }
@@ -982,7 +983,7 @@ namespace Shell //
                 //Check that the active user has correct permissions - PERMISSIONS HERE
 
                 //Set owner of object to specified user
-                
+                file->setUser(args[0]);
               }
             }
             else
@@ -993,12 +994,28 @@ namespace Shell //
         //Adem will need to add permission number stuff to chgrp when done - Marked below
         else if(command == "chgrp")
         {
+            Node* file = findFile(args[1]);
             //Change group of the indicated object to indicated group. Fails if object or user doesnt exist as well as user not having permissins
             if (args.size() == 2)
             {
-              //Check that the user exists
+              //Check that the group exists
+              if (findGroup(args[0]) == -1)
+              {
+                std::cout << args[0] << " is not an existing group" << std::endl;
+              }
               //Check that the object exists
-              //Check that the active user has correct permissions - PERMISSIONS HERE
+              else if (file == nullptr)
+              {
+                std::cout << args[1] << " is not an existing file or directory" << std::endl;
+              }
+              // Try and switch group of object
+              else
+              {
+                //Check that the active user has correct permissions - PERMISSIONS HERE
+
+                //Set owner of object to specified user
+                file->setGroup(args[0]);
+              }
             }
             else
             {
@@ -1176,7 +1193,6 @@ namespace Shell //
                   }
                   if (PermissionSection.find('x') != std::string::npos)
                   {
-                    
                     Process p;
                     p.id = file->name;
                     p.startTime = times;
@@ -1192,7 +1208,6 @@ namespace Shell //
                       core2.push_back(p);
                       firstCore = true;
                     }
-                    
                   }
                   else
                   {
@@ -1268,7 +1283,6 @@ namespace Shell //
                   }
                   if (PermissionSection.find('x') != std::string::npos)
                   {
-                    
                     for(unsigned int i = 0; i < core1.size(); i++)
                   {
                   if(core1[i].id == file->name)
@@ -1283,7 +1297,6 @@ namespace Shell //
                 core2[i].isDone = true;
               }
             }
-                    
                   }
                   else
                   {
@@ -1292,7 +1305,6 @@ namespace Shell //
                 }
               }
           }
-            
         }
         else if(command == "schedHist")
         {

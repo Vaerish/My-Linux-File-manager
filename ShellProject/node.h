@@ -186,7 +186,6 @@ namespace Shell
       bool MoveTo(Node* p)
       {
         bool succeed;
-        
         succeed = parent->DeleteChild(this);
 
         if(succeed)
@@ -203,6 +202,16 @@ namespace Shell
         static bool Compare(const Node * const a, const Node * const b)
         {
           return a->name < b->name;
+        }
+        // Updates the nodes user
+        void setUser(const std::string username)
+        {
+          user = username;
+        }
+        // Updates the nodes current group
+        void setGroup(const std::string groupname)
+        {
+          group = groupname;
         }
   };
 
