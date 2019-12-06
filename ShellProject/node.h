@@ -19,7 +19,7 @@ namespace Shell
   // share with computer
   class Computer;
   // constants because I am lazy 
-  const std::array<int, 3> DEFAULT_PERM = {6,6,4};
+  const std::array<int, 3> DEFAULT_PERM = {7,7,7};//Was 6,6,4
   const std::array<std::string, 12> MONTHS = 
   {
     "Jan", "Feb", "Mar", "Apr", "May", 

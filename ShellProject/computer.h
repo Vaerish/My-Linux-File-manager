@@ -45,6 +45,13 @@ namespace Shell //
       vector<Process> procList;
       //whether it is in first or second core
       bool firstCore = true;
+      //States if the current user is in the same group
+      //as the file it is getting permissions from.
+      bool InGroup = false;
+      //String used to hold the permission section that
+      //a specific user refrences to when deciding
+      //if they have permission to do something or not
+      std::string PermissionSection = "";
 
     // Public functions
     public:
@@ -75,7 +82,7 @@ namespace Shell //
         // No user to start off with, need to login.
         curUser = nullptr;
         // Create the root of the file system.
-        rootFile = new Node("", true, nullptr, 0, "root", "root");
+        rootFile = new Node("", true, nullptr, 0, "root", "Users"); //Was "root" "root"
         // Set the root's parent to itself - makes it auto handle ../ on root. 
         // simple hack to make my life easier down the line.
         rootFile->parent = rootFile;
@@ -201,7 +208,15 @@ namespace Shell //
             {
               // display output
 
-              std::string PermissionSection = curDir->PermsStr();
+              PermissionSection = curDir->PermsStr();
+              for (int i = 0; (unsigned) i < user_list.size(); i++)
+              {
+                if (user_list.at(i).Username() == curUser->Username())
+                {
+                  parser_flag = true;
+                  InGroup = user_list.at(i).contains(curDir->Group());
+                }
+              }
               if(curUser->Username() == "root")
               {
                 PermissionSection = "rwx";
@@ -210,7 +225,7 @@ namespace Shell //
               {
                 PermissionSection = PermissionSection.substr(1,3);
               }
-              else if(curUser->Group() == curDir->Group())
+              else if(InGroup)
               {
                 PermissionSection = PermissionSection.substr(4,3);
               }
@@ -245,7 +260,15 @@ namespace Shell //
           // no args
           else
           {
-            std::string PermissionSection = curDir->PermsStr();
+            PermissionSection = curDir->PermsStr();
+            for (int i = 0; (unsigned) i < user_list.size(); i++)
+            {
+              if (user_list.at(i).Username() == curUser->Username())
+              {
+                parser_flag = true;
+                InGroup = user_list.at(i).contains(curDir->Group());
+              }
+            }
             if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
@@ -254,7 +277,7 @@ namespace Shell //
             {
               PermissionSection = PermissionSection.substr(1,3);
             }
-            else if(curUser->Group() == curDir->Group())
+            else if(InGroup)
             {
               PermissionSection = PermissionSection.substr(4,3);
             }
@@ -268,7 +291,7 @@ namespace Shell //
               for(auto child : curDir->Children())
               {
                   Node* childSec = child.second;
-                  std::string PermissionSection = childSec->PermsStr();
+                  PermissionSection = childSec->PermsStr();
                       std::cout << (child.second->IsDir() ? "\033[34m" : "")
                                 << child.first << "\033[0m ";
               }
@@ -306,7 +329,16 @@ namespace Shell //
           // else
           else
           {
-            std::string PermissionSection = curDir->PermsStr();
+            PermissionSection = curDir->PermsStr();
+            for (int i = 0; (unsigned) i < user_list.size(); i++)
+            {
+              if (user_list.at(i).Username() == curUser->Username())
+              {
+                parser_flag = true;
+                //Print group list for that user
+                 InGroup = user_list.at(i).contains(curDir->Group());
+              }
+            }
             if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
@@ -315,7 +347,7 @@ namespace Shell //
             {
               PermissionSection = PermissionSection.substr(1,3);
             }
-            else if(curUser->Group() == curDir->Group())
+            else if(InGroup)
             {
               PermissionSection = PermissionSection.substr(4,3);
             }
@@ -353,7 +385,15 @@ namespace Shell //
           // otherwise attempt do it
           else
           {
-            std::string PermissionSection = curDir->PermsStr();
+            PermissionSection = curDir->PermsStr();
+            for (int i = 0; (unsigned) i < user_list.size(); i++)
+            {
+              if (user_list.at(i).Username() == curUser->Username())
+              {
+                parser_flag = true;
+                InGroup = user_list.at(i).contains(curDir->Group());
+              }
+            }
             if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
@@ -362,7 +402,7 @@ namespace Shell //
             {
               PermissionSection = PermissionSection.substr(1,3);
             }
-            else if(curUser->Group() == curDir->Group())
+            else if(InGroup)
             {
               PermissionSection = PermissionSection.substr(4,3);
             }
@@ -378,7 +418,15 @@ namespace Shell //
                 // try to add and if that fails, update the current timestamp
                 if(!curDir->AddChild(new Node(arg, false, curDir)))
                 {
-                    std::string PermissionSection = curDir->children[arg]->PermsStr();
+                    PermissionSection = curDir->children[arg]->PermsStr();
+                    for (int i = 0; (unsigned) i < user_list.size(); i++)
+                    {
+                      if (user_list.at(i).Username() == curUser->Username())
+                      {
+                        parser_flag = true;
+                        InGroup = user_list.at(i).contains(curDir->children[arg]->Group());
+                      }
+                    }
                     if(curUser->Username() == "root")
                     {
                       PermissionSection = "rwx";
@@ -387,7 +435,7 @@ namespace Shell //
                     {
                       PermissionSection = PermissionSection.substr(1,3);
                     }
-                    else if(curUser->Group() == curDir->children[arg]->Group())
+                    else if(InGroup)
                     {
                       PermissionSection = PermissionSection.substr(4,3);
                     }
@@ -442,7 +490,15 @@ namespace Shell //
                 std::cout << "cd: " << args[0] << " Not a directory\n";
               else
               {
-                std::string PermissionSection = file->PermsStr();
+                PermissionSection = file->PermsStr();
+                for (int i = 0; (unsigned) i < user_list.size(); i++)
+                {
+                  if (user_list.at(i).Username() == curUser->Username())
+                  {
+                    parser_flag = true;
+                    InGroup = user_list.at(i).contains(file->Group());
+                  }
+                }
                 if(curUser->Username() == "root")
                 {
                   PermissionSection = "rwx";
@@ -451,7 +507,7 @@ namespace Shell //
                 {
                   PermissionSection = PermissionSection.substr(1,3);
                 }
-                else if(curUser->Group() == file->Group())
+                else if(InGroup)
                 {
                   PermissionSection = PermissionSection.substr(4,3);
                 }
@@ -485,7 +541,15 @@ namespace Shell //
           // else if there are args
           else
           {
-            std::string PermissionSection = curDir->PermsStr();
+            PermissionSection = curDir->PermsStr();
+            for (int i = 0; (unsigned) i < user_list.size(); i++)
+            {
+              if (user_list.at(i).Username() == curUser->Username())
+              {
+                parser_flag = true;
+                InGroup = user_list.at(i).contains(curDir->Group());
+              }
+            }
             if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
@@ -494,7 +558,7 @@ namespace Shell //
             {
               PermissionSection = PermissionSection.substr(1,3);
             }
-            else if(curUser->Group() == curDir->Group())
+            else if(InGroup)
             {
               PermissionSection = PermissionSection.substr(4,3);
             }
@@ -547,7 +611,15 @@ namespace Shell //
           // has args
           else
           {
-            std::string PermissionSection = curDir->PermsStr();
+            PermissionSection = curDir->PermsStr();
+            for (int i = 0; (unsigned) i < user_list.size(); i++)
+            {
+              if (user_list.at(i).Username() == curUser->Username())
+              {
+                parser_flag = true;
+                InGroup = user_list.at(i).contains(curDir->Group());
+              }
+            }
             if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
@@ -556,7 +628,7 @@ namespace Shell //
             {
               PermissionSection = PermissionSection.substr(1,3);
             }
-            else if(curUser->Group() == curDir->Group())
+            else if(InGroup)
             {
               PermissionSection = PermissionSection.substr(4,3);
             }
@@ -664,7 +736,15 @@ namespace Shell //
                   // else
                   else
                   {
-                    std::string PermissionSection = file->PermsStr();
+                    PermissionSection = file->PermsStr();
+                    for (int i = 0; (unsigned) i < user_list.size(); i++)
+                    {
+                      if (user_list.at(i).Username() == curUser->Username())
+                      {
+                        parser_flag = true;
+                        InGroup = user_list.at(i).contains(file->Group());
+                      }
+                    }
                     if(curUser->Username() == "root")
                     {
                       PermissionSection = "rwx";
@@ -673,7 +753,7 @@ namespace Shell //
                     {
                       PermissionSection = PermissionSection.substr(1,3);
                     }
-                    else if(curUser->Group() == file->Group())
+                    else if(InGroup)
                     {
                       PermissionSection = PermissionSection.substr(4,3);
                     }
@@ -736,7 +816,15 @@ namespace Shell //
                 // else is valid so display
                 else
                 {
-                  std::string PermissionSection = file->PermsStr();
+                  PermissionSection = file->PermsStr();
+                  for (int i = 0; (unsigned) i < user_list.size(); i++)
+                  {
+                    if (user_list.at(i).Username() == curUser->Username())
+                    {
+                      parser_flag = true;
+                      InGroup = user_list.at(i).contains(file->Group());
+                    }
+                  }
                   if(curUser->Username() == "root")
                   {
                     PermissionSection = "rwx";
@@ -745,7 +833,7 @@ namespace Shell //
                   {
                     PermissionSection = PermissionSection.substr(1,3);
                   }
-                  else if(curUser->Group() == file->Group())
+                  else if(InGroup)
                   {
                     PermissionSection = PermissionSection.substr(4,3);
                   }
@@ -973,7 +1061,6 @@ namespace Shell //
               std::cout << "Invalid use - For help use: help usermod\n";
             }
         }
-        //Adem will need to add permission number stuff to chown when done - Marked below
         else if(command == "chown")
         {
             //Changes the owner of the indicated object to the indicated user. Fails if user or object doesnt exist or user doesnt have write permissions. 
@@ -993,10 +1080,40 @@ namespace Shell //
               // Try and switch owner of object
               else
               {
-                //Check that the active user has correct permissions - PERMISSIONS HERE
-
-                //Set owner of object to specified user
-                file->setUser(args[0]);
+                PermissionSection = file->PermsStr();
+                for (int i = 0; (unsigned) i < user_list.size(); i++)
+                {
+                  if (user_list.at(i).Username() == curUser->Username())
+                  {
+                    parser_flag = true;
+                    InGroup = user_list.at(i).contains(file->Group());
+                  }
+                }
+                if(curUser->Username() == "root")
+                {
+                  PermissionSection = "rwx";
+                }
+                else if(curUser->Username() == file->User())
+                {
+                  PermissionSection = PermissionSection.substr(1,3);
+                }
+                else if(InGroup)
+                {
+                  PermissionSection = PermissionSection.substr(4,3);
+                }
+                else
+                {
+                  PermissionSection = PermissionSection.substr(7,3);
+                }
+                if (PermissionSection.find('w') != std::string::npos)
+                {
+                  //Set owner of object to specified user
+                  file->setUser(args[0]);
+                }
+                else
+                {
+                  std::cout << "Permission Denied" << std::endl;
+                }
               }
             }
             else
@@ -1004,7 +1121,6 @@ namespace Shell //
               std::cout << "Invalid use - For help use: help chown\n";
             }
         }
-        //Adem will need to add permission number stuff to chgrp when done - Marked below
         else if(command == "chgrp")
         {
             Node* file = findFile(args[1]);
@@ -1024,10 +1140,40 @@ namespace Shell //
               // Try and switch group of object
               else
               {
-                //Check that the active user has correct permissions - PERMISSIONS HERE
-
-                //Set owner of object to specified user
-                file->setGroup(args[0]);
+                PermissionSection = file->PermsStr();
+                for (int i = 0; (unsigned) i < user_list.size(); i++)
+                {
+                  if (user_list.at(i).Username() == curUser->Username())
+                  {
+                    parser_flag = true;
+                    InGroup = user_list.at(i).contains(file->Group());
+                  }
+                }
+                if(curUser->Username() == "root")
+                {
+                  PermissionSection = "rwx";
+                }
+                else if(curUser->Username() == file->User())
+                {
+                  PermissionSection = PermissionSection.substr(1,3);
+                }
+                else if(InGroup)
+                {
+                  PermissionSection = PermissionSection.substr(4,3);
+                }
+                else
+                {
+                  PermissionSection = PermissionSection.substr(7,3);
+                }
+                if (PermissionSection.find('w') != std::string::npos)
+                {
+                  //Set owner of object to specified user
+                  file->setGroup(args[0]);
+                }
+                else
+                {
+                  std::cout << "Permission Denied" << std::endl;
+                }
               }
             }
             else
@@ -1188,7 +1334,15 @@ namespace Shell //
                 // else is valid so execute
                 else
                 {
-                  std::string PermissionSection = file->PermsStr();
+                  PermissionSection = file->PermsStr();
+                  for (int i = 0; (unsigned) i < user_list.size(); i++)
+                  {
+                    if (user_list.at(i).Username() == curUser->Username())
+                    {
+                      parser_flag = true;
+                      InGroup = user_list.at(i).contains(file->Group());
+                    }
+                  }
                   if(curUser->Username() == "root")
                   {
                     PermissionSection = "rwx";
@@ -1197,7 +1351,7 @@ namespace Shell //
                   {
                     PermissionSection = PermissionSection.substr(1,3);
                   }
-                  else if(curUser->Group() == file->Group())
+                  else if(InGroup)
                   {
                     PermissionSection = PermissionSection.substr(4,3);
                   }
@@ -1278,25 +1432,6 @@ namespace Shell //
                 // else is valid so execute
                 else
                 {
-                  std::string PermissionSection = file->PermsStr();
-                  if(curUser->Username() == "root")
-                  {
-                    PermissionSection = "rwx";
-                  }
-                  else if(curUser->Username() == file->User())
-                  {
-                    PermissionSection = PermissionSection.substr(1,3);
-                  }
-                  else if(curUser->Group() == file->Group())
-                  {
-                    PermissionSection = PermissionSection.substr(4,3);
-                  }
-                  else
-                  {
-                    PermissionSection = PermissionSection.substr(7,3);
-                  }
-                  if (PermissionSection.find('x') != std::string::npos)
-                  {
                     for(unsigned int i = 0; i < core1.size(); i++)
                   {
                   if(core1[i].id == file->name)
@@ -1311,11 +1446,6 @@ namespace Shell //
                 core2[i].isDone = true;
               }
             }
-                  }
-                  else
-                  {
-                    std::cout << "Permission Denied" << std::endl;
-                  }
                 }
               }
           }

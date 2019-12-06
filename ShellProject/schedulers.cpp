@@ -13,8 +13,7 @@ int RoundRobin(const int& curTime, const vector<Process>& procList, const int& t
     static int timeToNextSched = timeQuantum;  //keeps track of when we should actually schedule a new process
     static deque<int> ready;  //keeps track of the processes that are ready to be scheduled
 
-    int idx = -1, chk;
-    bool done;
+    int idx = -1;
     bool found;
 
     // first look through the process list and find any processes that are newly ready and
@@ -24,7 +23,7 @@ int RoundRobin(const int& curTime, const vector<Process>& procList, const int& t
         if(procList[i].startTime < curTime && procList[i].isDone == false)
         {
             found = false;
-            for(int j = 0; j < ready.size(); j++)
+            for(unsigned int j = 0; j < ready.size(); j++)
             {
                 if(ready[j] == i)
                 {
@@ -81,20 +80,17 @@ int RoundRobin(const int& curTime, const vector<Process>& procList, const int& t
 
 int SPN(const int& curTime, const vector<Process>& procList, const int& timeQuantum)
 {
-    static int timeToNextSched = timeQuantum;  //keeps track of when we should actually schedule a new process
-    static vector<int> ready;  //keeps track of the processes that are ready to be scheduled
+    vector<int> ready;  //keeps track of the processes that are ready to be scheduled
 
-    int idx = -1, chk;
-    bool done;
+    int idx = -1;
     bool found;
 
-    int i_end;
     for(int i = 0, i_end = procList.size(); i < i_end; ++i)
     {
         if(procList[i].startTime < curTime && procList[i].isDone == false)
         {
             found = false;
-            for(int j = 0; j < ready.size(); j++)
+            for(unsigned int j = 0; j < ready.size(); j++)
             {
                 if(ready[j] == i)
                 {
@@ -110,7 +106,7 @@ int SPN(const int& curTime, const vector<Process>& procList, const int& timeQuan
     }
     if(procList[ready[0]].isDone)
     {
-   
+        //this will determine which proclist item actually needs to be run next ie initial one is initial shortest until for loop belows finds actual shortest
         ready.erase(ready.begin());
         int size = procList[ready[0]].totalTimeNeeded;
         int place = 0;
@@ -122,7 +118,7 @@ int SPN(const int& curTime, const vector<Process>& procList, const int& timeQuan
     if(ready.size() > 0)
     {
 
-        for(int i = 0; i < ready.size(); i++)
+        for(unsigned int i = 0; i < ready.size(); i++)
         {
             if(procList[ready[i]].totalTimeNeeded < size || ((procList[ready[i]].totalTimeNeeded == size) && procList[ready[i]].startTime < start))
             {
@@ -139,7 +135,6 @@ int SPN(const int& curTime, const vector<Process>& procList, const int& timeQuan
 
         }
     }
-
     if(ready.size() > 0)
     {
        
@@ -148,7 +143,6 @@ int SPN(const int& curTime, const vector<Process>& procList, const int& timeQuan
     }
     else
     {
-        
         idx = -1;
     
     }
@@ -158,20 +152,17 @@ int SPN(const int& curTime, const vector<Process>& procList, const int& timeQuan
 
 int FCFS(const int& curTime, const vector<Process>& procList, const int& timeQuantum)
 {
-    static int timeToNextSched = timeQuantum;  //keeps track of when we should actually schedule a new process
-    static vector<int> ready;  //keeps track of the processes that are ready to be scheduled
+    vector<int> ready;  //keeps track of the processes that are ready to be scheduled
 
-    int idx = -1, chk;
-    bool done;
+    int idx = -1;
     bool found;
 
-    int i_end;
     for(int i = 0, i_end = procList.size(); i < i_end; ++i)
     {
         if(procList[i].startTime < curTime && procList[i].isDone == false)
         {
             found = false;
-            for(int j = 0; j < ready.size(); j++)
+            for(unsigned int j = 0; j < ready.size(); j++)
             {
                 if(ready[j] == i)
                 {
@@ -212,10 +203,9 @@ int FCFS(const int& curTime, const vector<Process>& procList, const int& timeQua
 int SRT(const int& curTime, const vector<Process>& procList, const int& timeQuantum)
 {
     static int timeToNextSched = timeQuantum;  //keeps track of when we should actually schedule a new process
-    static vector<int> ready;  //keeps track of the processes that are ready to be scheduled
+    vector<int> ready;  //keeps track of the processes that are ready to be scheduled
 
-    int idx = -1, chk;
-    bool done;
+    int idx = -1;
     bool found;
 
     // first look through the process list and find any processes that are newly ready and
@@ -225,7 +215,7 @@ int SRT(const int& curTime, const vector<Process>& procList, const int& timeQuan
         if(procList[i].startTime < curTime && procList[i].isDone == false)
         {
             found = false;
-            for(int j = 0; j < ready.size(); j++)
+            for(unsigned int j = 0; j < ready.size(); j++)
             {
                 if(ready[j] == i)
                 {
@@ -247,7 +237,7 @@ int SRT(const int& curTime, const vector<Process>& procList, const int& timeQuan
     int theirTime;
     int place = 0;
     bool switched = false;
-    for(int i = 0; i < ready.size(); i++)
+    for(unsigned int i = 0; i < ready.size(); i++)
     {
 
         theirTime = procList[ready[i]].totalTimeNeeded - procList[ready[i]].timeScheduled;
@@ -298,7 +288,7 @@ int SRT(const int& curTime, const vector<Process>& procList, const int& timeQuan
 int HRR(const int& curTime, const vector<Process>& procList, const int& timeQuantum)
 {
     static int timeToNextSched = timeQuantum;  //keeps track of when we should actually schedule a new process
-    static vector<int> ready;  //keeps track of the processes that are ready to be scheduled
+    vector<int> ready;  //keeps track of the processes that are ready to be scheduled
     bool found;
     int idx = -1;
 
@@ -307,7 +297,7 @@ int HRR(const int& curTime, const vector<Process>& procList, const int& timeQuan
         if(procList[i].startTime < curTime && procList[i].isDone == false)
         {
             found = false;
-            for(int j = 0; j < ready.size(); j++)
+            for(unsigned int j = 0; j < ready.size(); j++)
             {
                 if(ready[j] == i)
                 {
@@ -328,13 +318,12 @@ int HRR(const int& curTime, const vector<Process>& procList, const int& timeQuan
         ready.erase(ready.begin());
         if(ready.size() > 0)
         {
-        int size = procList[0].totalTimeNeeded;
         float chosenRatio = (float((procList[ready[0]].totalTimeNeeded)+(curTime -(procList[ready[0]].startTime)))/float(procList[ready[0]].totalTimeNeeded));
         float theirRatio;
         int place = 0;
 
  
-        for(int i = 0; i < ready.size(); i++)
+        for(unsigned int i = 0; i < ready.size(); i++)
         {
             theirRatio = (float((procList[ready[i]].totalTimeNeeded) + (curTime-(procList[ready[i]].startTime))) / float(procList[ready[i]].totalTimeNeeded));
             if(theirRatio > chosenRatio || chosenRatio == 0)
