@@ -1352,7 +1352,7 @@ namespace Shell //
                     p.startTime = 0; //this will update in the thread as each new process is found by the schedular
                     p.totalTimeNeeded = file->time_run; //this makes it between ten and 50 units long
                     p.user = file->user;
-                    if(firstCore)
+                    if(firstCore) //determines which core the file that needs to be executed will be pushed to
                     {
                       core1.push_back(p);
                       firstCore = false;
@@ -1371,18 +1371,18 @@ namespace Shell //
               }
           }
         }
-        else if(command == "ps")
+        else if(command == "ps") //calls both cores and says what needs to be run as long as it is not done and is currently running 
         {
             for(unsigned int i = 0; i < core1.size(); i++)
             {
-              if(!core1[i].isDone)
+              if(!core1[i].isDone && core1[i].timeScheduled != 1)
               {
                 cout << core1[i].id <<  " " << core1[i].user << " " << core1[i].startTime << " " << core1[i].timeScheduled << " "<< core1[i].totalTimeNeeded << endl;
               }
             }
             for(unsigned int i = 0; i < core2.size(); i++)
             {
-              if(!core2[i].isDone)
+              if(!core2[i].isDone&& core1[i].timeScheduled != 1)
               {
                 cout << core2[i].id << " " << core2[i].user << " " << core2[i].startTime << " " << core2[i].timeScheduled << " "<< core2[i].totalTimeNeeded << endl;
               }
@@ -1393,7 +1393,7 @@ namespace Shell //
           if(args.size() == 0)
           {
             // error
-            std::cout << "run: Invalid use";
+            std::cout << "kill: Invalid use";
           }
           // else if there are args
           else
@@ -1436,7 +1436,7 @@ namespace Shell //
               }
           }
         }
-        else if(command == "schedHist")
+        else if(command == "schedHist") //prints out list of schedHist from point it was called
         {
             for(unsigned int i = 0; i < schedHist.size(); i++)
             {
@@ -1451,36 +1451,37 @@ namespace Shell //
         // this is the algorithm changer where it 
         else if(command == "algorithm")
         {
-            for(auto arg : args)
+            for(auto arg : args) //schedCh communicates to threads what current algorithm is being used
               {
-                if(arg == "Round_Robin")
+                if(arg == "RR")
                 {
                   schedCh = 1;
                 }
-                else if(arg == "Shortest_Process_Next")
+                else if(arg == "SPN")
                 {
                   schedCh = 2;
                 }
-                else if(arg == "Shortest_Remaining_Time")
+                else if(arg == "SRT")
                 {
                   schedCh = 3;
                 }
-                else if(arg == "Highest_Response_Ratio_Next")
+                else if(arg == "HRRN")
                 {
                   schedCh = 4;
                 }
-                else if(arg == "First_Come_First_Served")
+                else if(arg == "FCFS")
                 {
                   schedCh = 5;
                 }
                 else
                 {
+                  //list of all available options
                   cout << "In correct Option only available algorithms are " << endl;
-                  cout << "Round_Robin" << endl;
-                  cout << "Shortest_Process_Next" << endl;
-                  cout << "Shortest_Remaining_Time" << endl;
-                  cout << "Highest_Response_Ratio_Next" << endl;
-                  cout << "First_Come_First_Served" << endl;
+                  cout << "RR" << endl;
+                  cout << "SPN" << endl;
+                  cout << "SRT" << endl;
+                  cout << "HRRN" << endl;
+                  cout << "FCFS" << endl;
                   cout << "All spelled like above." << endl;
                 }
               }

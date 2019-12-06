@@ -178,7 +178,7 @@ int FCFS(const int& curTime, const vector<Process>& procList, const int& timeQua
     }
    for(unsigned int j = 0; j < ready.size(); j++)
    {
-        if(!procList[ready[j]].isDone)
+        if(!procList[ready[j]].isDone) //finds first process in list that is not done and makes it run
         {
             idx = ready[j];
             break;
@@ -186,7 +186,7 @@ int FCFS(const int& curTime, const vector<Process>& procList, const int& timeQua
    }
 
 
-    if(ready.size() <= 0)
+    if(ready.size() <= 0) //if nothing can be scheduled tell program
     {
        
          idx = -1;

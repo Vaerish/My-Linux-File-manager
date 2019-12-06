@@ -43,9 +43,9 @@ void runner(vector<Process>& procList) //this is our two threads
         	{
         		sizeNotDone++;
         	}
-            if(procList[i].timeScheduled == 0)
+            if(procList[i].startTime == 0)
             {
-                procList[i].timeScheduled = times;
+                procList[i].startTime = times;
             }
         }
         
@@ -104,9 +104,9 @@ void runner(vector<Process>& procList) //this is our two threads
             {
                 procList[procIdx].isDone = true;
                 procList[procIdx].timeFinished = times;
-                procList[procIdx].timeScheduled = 0;
+                procList[procIdx].timeScheduled = 0; //make sure scheduledTime is set to 0 just in case stuff happens as it sometimes does
             }
-            while(accessed)
+            while(accessed) //waiting for schedHist to push_back to ensure two histories are not pushed at the same time
             {
             	int i = 1;
             	i++;
