@@ -19,7 +19,6 @@ vector<Process> core2;
 vector<string> schedHist;
 
 bool doneCore;
-int times = 0;
 int schedCh = 1;
 bool accessed = false;
 void runner(vector<Process>& procList) //this is our two threads
@@ -28,11 +27,12 @@ void runner(vector<Process>& procList) //this is our two threads
   unsigned int procIdx;
   timeQuantum = 2;
   procIdx = -1;
-  schedChoice = schedCh;
-
+  int times = 1;
+  
     //while not all processes have completed: or while computer is not shut down
     while(doneCore)
     {
+        schedChoice = schedCh;
     	std::this_thread::sleep_for (std::chrono::milliseconds(100));
         //get the process to schedule next using the indicated scheduler
         procIdx = -1;
@@ -43,6 +43,10 @@ void runner(vector<Process>& procList) //this is our two threads
         	{
         		sizeNotDone++;
         	}
+            if(procList[i].startTime == 0)
+            {
+                procList[i].startTime = times;
+            }
         }
         
         if(sizeNotDone > 0) //to ensure there is actually something to schedule
@@ -100,8 +104,9 @@ void runner(vector<Process>& procList) //this is our two threads
             {
                 procList[procIdx].isDone = true;
                 procList[procIdx].timeFinished = times;
+                procList[procIdx].timeScheduled = 0; //make sure scheduledTime is set to 0 just in case stuff happens as it sometimes does
             }
-            while(accessed)
+            while(accessed) //waiting for schedHist to push_back to ensure two histories are not pushed at the same time
             {
             	int i = 1;
             	i++;
