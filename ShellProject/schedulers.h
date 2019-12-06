@@ -18,14 +18,16 @@ struct Process
 
     // Given data
     string id;            //The process id
-    int startTime;        //The time at which the process becomes available for scheduling
-    int totalTimeNeeded;  //The total amount of time needed by the process
+    
 
     // Process details
     bool isDone;          //Indicates if the process is complete
+    int totalTimeNeeded;  //The total amount of time needed by the process
     int timeScheduled;    //The amount of time the process has been scheduled so far
+    int startTime;        //The time at which the process becomes available for scheduling
     int timeFinished;     //The time that the process completed
     std::string user; 
+    bool justRan;
 };
 
 
