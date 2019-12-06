@@ -57,7 +57,7 @@ namespace Shell
       // friends with a computer
       friend Computer;
     public:
-      // Constructors 
+      // Constructors//for (auto child : curDir->Children())
       Node(std::string n, bool dir, Node* p, int s, std::string u, std::string g)
       {
         auto time = std::chrono::system_clock::now(); 

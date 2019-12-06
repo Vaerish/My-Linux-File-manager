@@ -152,6 +152,19 @@ namespace Shell //
         }
         return -1;
       }
+      //Function that sets all of the objects owned by a specified user back to root
+      void resetUser(const std::string uname, Node* file)
+      {
+        if (file->User() == uname)
+        {
+          file->setUser("root");
+        }
+        // Make sure all child nodes are reset in the same way
+        for (auto child : file->Children())
+        {
+          resetUser(uname, child);
+        }
+      }
 
       // Parses input. returns true if the console should continue.
       bool parser(std::string input)
@@ -1040,7 +1053,8 @@ namespace Shell //
                 temp_string = curUser->Username(); // Saves current user
                 user_list.erase(user_list.begin() + findUser(args[0]) , user_list.begin() + findUser(args[0]) + 1);
                 curUser = &user_list[findUser(temp_string)]; // Fixes the curUser pointer after altering the users list
-		//ADD ALL PERMISSION SWITCHES HERE
+		//Change any objects owned by this user to be changed to belong to Root now
+                resetOwner(args[0], rootFile);
               }
             }
             //Removes listed user from indicated group. Fails if either doen't exist or user is not part of the group, the group is Users, or the user is Root
