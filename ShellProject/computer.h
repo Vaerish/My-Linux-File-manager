@@ -13,7 +13,6 @@
 extern bool doneCore;
 extern vector<Process> core1;
 extern vector<Process> core2;
-extern int times;
 extern vector<string> schedHist;
 
 namespace Shell //
@@ -1349,7 +1348,7 @@ namespace Shell //
                   {
                     Process p;
                     p.id = file->name;
-                    p.startTime = times;
+                    p.startTime = 0; //this will update in the thread as each new process is found by the schedular
                     p.totalTimeNeeded = file->time_run; //this makes it between ten and 50 units long
                     p.user = file->user;
                     if(firstCore)

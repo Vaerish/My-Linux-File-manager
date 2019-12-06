@@ -19,7 +19,6 @@ vector<Process> core2;
 vector<string> schedHist;
 
 bool doneCore;
-int times = 0;
 int schedCh = 1;
 bool accessed = false;
 void runner(vector<Process>& procList) //this is our two threads
@@ -28,6 +27,7 @@ void runner(vector<Process>& procList) //this is our two threads
   unsigned int procIdx;
   timeQuantum = 2;
   procIdx = -1;
+  int times = 1;
   schedChoice = schedCh;
 
     //while not all processes have completed: or while computer is not shut down
@@ -43,6 +43,10 @@ void runner(vector<Process>& procList) //this is our two threads
         	{
         		sizeNotDone++;
         	}
+            if(procList[i].timeScheduled == 0)
+            {
+                procList[i].timeScheduled = times;
+            }
         }
         
         if(sizeNotDone > 0) //to ensure there is actually something to schedule
