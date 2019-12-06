@@ -222,6 +222,7 @@ namespace Shell //
               // display output
 
               PermissionSection = curDir->PermsStr();
+              //Finds if current User in in same group as object
               for (int i = 0; (unsigned) i < user_list.size(); i++)
               {
                 if (user_list.at(i).Username() == curUser->Username())
@@ -230,6 +231,7 @@ namespace Shell //
                   InGroup = user_list.at(i).contains(curDir->Group());
                 }
               }
+              //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
               if(curUser->Username() == "root")
               {
                 PermissionSection = "rwx";
@@ -261,7 +263,7 @@ namespace Shell //
               }
               else
               {
-                std::cout << "Permission Denied" << std::endl;
+                std::cout << "Permission Denied due to not having read permissions" << std::endl;
               }
             }
             else
@@ -274,6 +276,7 @@ namespace Shell //
           else
           {
             PermissionSection = curDir->PermsStr();
+            //Finds if current User in in same group as object
             for (int i = 0; (unsigned) i < user_list.size(); i++)
             {
               if (user_list.at(i).Username() == curUser->Username())
@@ -282,6 +285,7 @@ namespace Shell //
                 InGroup = user_list.at(i).contains(curDir->Group());
               }
             }
+            //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
             if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
@@ -314,7 +318,7 @@ namespace Shell //
             }
             else
             {
-              std::cout << "Permission Denied" << std::endl;
+              std::cout << "Permission Denied due to not having read permissions" << std::endl;
             }
           }
         }
@@ -343,6 +347,7 @@ namespace Shell //
           else
           {
             PermissionSection = curDir->PermsStr();
+            //Finds if current User in in same group as object
             for (int i = 0; (unsigned) i < user_list.size(); i++)
             {
               if (user_list.at(i).Username() == curUser->Username())
@@ -352,6 +357,7 @@ namespace Shell //
                  InGroup = user_list.at(i).contains(curDir->Group());
               }
             }
+            //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
             if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
@@ -382,7 +388,7 @@ namespace Shell //
             }
             else
             {
-              std::cout << "Permission Denied" << std::endl;
+              std::cout << "Permission Denied due to not having write permissions" << std::endl;
             }
           }
         }
@@ -399,6 +405,7 @@ namespace Shell //
           else
           {
             PermissionSection = curDir->PermsStr();
+            //Finds if current User in in same group as object
             for (int i = 0; (unsigned) i < user_list.size(); i++)
             {
               if (user_list.at(i).Username() == curUser->Username())
@@ -407,6 +414,7 @@ namespace Shell //
                 InGroup = user_list.at(i).contains(curDir->Group());
               }
             }
+            //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
             if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
@@ -432,6 +440,7 @@ namespace Shell //
                 if(!curDir->AddChild(new Node(arg, false, curDir, curUser->Username(), curUser->Group())))
                 {
                     PermissionSection = curDir->children[arg]->PermsStr();
+                    //Finds if current User in in same group as object
                     for (int i = 0; (unsigned) i < user_list.size(); i++)
                     {
                       if (user_list.at(i).Username() == curUser->Username())
@@ -440,6 +449,7 @@ namespace Shell //
                         InGroup = user_list.at(i).contains(curDir->children[arg]->Group());
                       }
                     }
+                    //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
                     if(curUser->Username() == "root")
                     {
                       PermissionSection = "rwx";
@@ -462,14 +472,14 @@ namespace Shell //
                     }
                     else
                     {
-                      std::cout << "Permission Denied" << std::endl;
+                      std::cout << "Permission Denied due to not having write permissions" << std::endl;
                     }
                 }
               }
             }
             else
             {
-              std::cout << "Permission Denied" << std::endl;
+              std::cout << "Permission Denied due to not having write permissions" << std::endl;
             }
           }
         }
@@ -504,6 +514,7 @@ namespace Shell //
               else
               {
                 PermissionSection = file->PermsStr();
+                //Finds if current User in in same group as object
                 for (int i = 0; (unsigned) i < user_list.size(); i++)
                 {
                   if (user_list.at(i).Username() == curUser->Username())
@@ -512,6 +523,7 @@ namespace Shell //
                     InGroup = user_list.at(i).contains(file->Group());
                   }
                 }
+                //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
                 if(curUser->Username() == "root")
                 {
                   PermissionSection = "rwx";
@@ -535,7 +547,7 @@ namespace Shell //
                 }
                 else
                 {
-                  std::cout << "Permission Denied" << std::endl;
+                  std::cout << "Permission Denied due to not having execute permissions" << std::endl;
                 }
               }
             // else file isn't real
@@ -555,6 +567,7 @@ namespace Shell //
           else
           {
             PermissionSection = curDir->PermsStr();
+            //Finds if current User in in same group as object
             for (int i = 0; (unsigned) i < user_list.size(); i++)
             {
               if (user_list.at(i).Username() == curUser->Username())
@@ -563,6 +576,7 @@ namespace Shell //
                 InGroup = user_list.at(i).contains(curDir->Group());
               }
             }
+            //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
             if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
@@ -608,7 +622,7 @@ namespace Shell //
             }
             else
             {
-              std::cout << "Permission Denied" << std::endl;
+              std::cout << "Permission Denied due to not having write permissions" << std::endl;
             }
           }
         }
@@ -625,6 +639,7 @@ namespace Shell //
           else
           {
             PermissionSection = curDir->PermsStr();
+            //Finds if current User in in same group as object
             for (int i = 0; (unsigned) i < user_list.size(); i++)
             {
               if (user_list.at(i).Username() == curUser->Username())
@@ -633,6 +648,7 @@ namespace Shell //
                 InGroup = user_list.at(i).contains(curDir->Group());
               }
             }
+            //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
             if(curUser->Username() == "root")
             {
               PermissionSection = "rwx";
@@ -695,7 +711,7 @@ namespace Shell //
             }
             else
             {
-              std::cout << "Permission Denied" << std::endl;
+              std::cout << "Permission Denied due to not having write permissions" << std::endl;
             }
           }
         }
@@ -750,6 +766,7 @@ namespace Shell //
                   else
                   {
                     PermissionSection = file->PermsStr();
+                    //Finds if current User in in same group as object
                     for (int i = 0; (unsigned) i < user_list.size(); i++)
                     {
                       if (user_list.at(i).Username() == curUser->Username())
@@ -758,6 +775,7 @@ namespace Shell //
                         InGroup = user_list.at(i).contains(file->Group());
                       }
                     }
+                    //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
                     if(curUser->Username() == "root")
                     {
                       PermissionSection = "rwx";
@@ -786,7 +804,7 @@ namespace Shell //
                     }
                     else
                     {
-                      std::cout << "Permission Denied" << std::endl;
+                      std::cout << "Permission Denied due to not having write permissions" << std::endl;
                     }
                   }
                 }
@@ -830,6 +848,7 @@ namespace Shell //
                 else
                 {
                   PermissionSection = file->PermsStr();
+                  //Finds if current User in in same group as object
                   for (int i = 0; (unsigned) i < user_list.size(); i++)
                   {
                     if (user_list.at(i).Username() == curUser->Username())
@@ -838,6 +857,7 @@ namespace Shell //
                       InGroup = user_list.at(i).contains(file->Group());
                     }
                   }
+                  //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
                   if(curUser->Username() == "root")
                   {
                     PermissionSection = "rwx";
@@ -861,7 +881,7 @@ namespace Shell //
                   }
                   else
                   {
-                    std::cout << "Permission Denied" << std::endl;
+                    std::cout << "Permission Denied due to not having read permissions" << std::endl;
                   }
                 }
               }
@@ -1094,6 +1114,7 @@ namespace Shell //
               else
               {
                 PermissionSection = file->PermsStr();
+                //Finds if current User in in same group as object
                 for (int i = 0; (unsigned) i < user_list.size(); i++)
                 {
                   if (user_list.at(i).Username() == curUser->Username())
@@ -1102,6 +1123,7 @@ namespace Shell //
                     InGroup = user_list.at(i).contains(file->Group());
                   }
                 }
+                //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
                 if(curUser->Username() == "root")
                 {
                   PermissionSection = "rwx";
@@ -1125,7 +1147,7 @@ namespace Shell //
                 }
                 else
                 {
-                  std::cout << "Permission Denied" << std::endl;
+                  std::cout << "Permission Denied due to not having write permissions" << std::endl;
                 }
               }
             }
@@ -1154,6 +1176,7 @@ namespace Shell //
               else
               {
                 PermissionSection = file->PermsStr();
+                //Finds if current User in in same group as object
                 for (int i = 0; (unsigned) i < user_list.size(); i++)
                 {
                   if (user_list.at(i).Username() == curUser->Username())
@@ -1162,6 +1185,7 @@ namespace Shell //
                     InGroup = user_list.at(i).contains(file->Group());
                   }
                 }
+                //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
                 if(curUser->Username() == "root")
                 {
                   PermissionSection = "rwx";
@@ -1185,7 +1209,7 @@ namespace Shell //
                 }
                 else
                 {
-                  std::cout << "Permission Denied" << std::endl;
+                  std::cout << "Permission Denied due to not having write permissions" << std::endl;
                 }
               }
             }
@@ -1348,6 +1372,7 @@ namespace Shell //
                 else
                 {
                   PermissionSection = file->PermsStr();
+                  //Finds if current User in in same group as object
                   for (int i = 0; (unsigned) i < user_list.size(); i++)
                   {
                     if (user_list.at(i).Username() == curUser->Username())
@@ -1356,6 +1381,7 @@ namespace Shell //
                       InGroup = user_list.at(i).contains(file->Group());
                     }
                   }
+                  //Checks if root, owner, same group, or public and assigns PermissionSection accordingly
                   if(curUser->Username() == "root")
                   {
                     PermissionSection = "rwx";
@@ -1392,7 +1418,7 @@ namespace Shell //
                   }
                   else
                   {
-                    std::cout << "Permission Denied" << std::endl;
+                    std::cout << "Permission Denied due to not having execute permissions" << std::endl;
                   }
                 }
               }
