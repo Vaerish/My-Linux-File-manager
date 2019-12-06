@@ -18,7 +18,7 @@ extern vector<string> schedHist;
 
 namespace Shell //
 {
-  const std::string CMDS[] = {"", "ls", "pwd", "exit", "mkdir", "touch", "cd", "rm", "rmdir", "chmod"};
+  const std::string CMDS[] = {"", "ls", "pwd", "exit", "mkdir", "touch", "cd", "rm", "rmdir", "chmod", "useradd", "chuser", "groupadd", "usermod", "chown", "chgrp", "userdel", "groupdel", "groups", "users", "run", "ps", "kill", "schedHist"};
 
   // Computer class
   // Represents the OS who controls the file System.
@@ -1503,7 +1503,53 @@ namespace Shell //
             std::cout << "Usage: chmod ### file/dir... : changes permissions"
                       << " of files/directories listed\n";
           }
-          else 
+          else if(args[0] == "useradd")
+          {
+            std::cout << "Usage: useradd <username> : Creates a new user\n";
+            std::cout << "Usage: useradd -G <group[,group]> <username> : Creates a new user\n";
+            std::cout << "and adds them to the specified groups\n";
+          }
+          else if(args[0] == "chuser")
+          {
+            std::cout << "Usage: chuser <username> : Changes to indicated active user\n";
+          }
+          else if(args[0] == "groupadd")
+          {
+            std::cout << "Usage: groupadd <group> : Creates a new group\n";
+          }
+          else if(args[0] == "usermod")
+          {
+            std::cout << "Usage: usermod -g <group> <username> : Sets primary group for indicated\n";
+            std::cout << "user to be indicated group\n";
+            std::cout << "Usage: usermod -a -G <group> <username> : Add indicated user to indicated group\n";
+          }
+          else if(args[0] == "chown")
+          {
+            std::cout << "Usage: chown <username> <object> : Change owner of indicated object to indicated user\n";
+          }
+          else if(args[0] == "chgrp")
+          {
+            std::cout << "Usage: chgrp <group> <object> : Change objects group to indicated group\n";
+          }
+          else if(args[0] == "userdel")
+          {
+            std::cout << "Usage: userdel -G <group> <username> : Remove the indicated user from the indicated\n";
+            std::cout << "group\n";
+            std::cout << "Usage: userdel <username> : Removes indicated user from system\n";
+          }
+          else if(args[0] == "groupdel")
+          {
+            std::cout << "Usage: groupdel <group> : Remove the group from the system\n";
+          }
+          else if(args[0] == "groups")
+          {
+            std::cout << "Usage: groups <username> : Lists groups indicated user is part of\n";
+          }
+          else if(args[0] == "users")
+          {
+            std::cout << "Usage: users : List the known users to the system\n";
+          }
+          else
           {
             std::cout << "help: command doesn't exist\n";
           }
