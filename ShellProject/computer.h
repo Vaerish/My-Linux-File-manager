@@ -14,6 +14,7 @@ extern bool doneCore;
 extern vector<Process> core1;
 extern vector<Process> core2;
 extern vector<string> schedHist;
+extern int schedCh;
 
 namespace Shell //
 {
@@ -1447,6 +1448,43 @@ namespace Shell //
         //
 
         // Handle help command
+        // this is the algorithm changer where it 
+        else if(command == "algorithm")
+        {
+            for(auto arg : args)
+              {
+                if(arg == "Round_Robin")
+                {
+                  schedCh = 1;
+                }
+                else if(arg == "Shortest_Process_Next")
+                {
+                  schedCh = 2;
+                }
+                else if(arg == "Shortest_Remaining_Time")
+                {
+                  schedCh = 3;
+                }
+                else if(arg == "Highest_Response_Ratio_Next")
+                {
+                  schedCh = 4;
+                }
+                else if(arg == "First_Come_First_Served")
+                {
+                  schedCh = 5;
+                }
+                else
+                {
+                  cout << "In correct Option only available algorithms are " << endl;
+                  cout << "Round_Robin" << endl;
+                  cout << "Shortest_Process_Next" << endl;
+                  cout << "Shortest_Remaining_Time" << endl;
+                  cout << "Highest_Response_Ratio_Next" << endl;
+                  cout << "First_Come_First_Served" << endl;
+                  cout << "All spelled like above." << endl;
+                }
+              }
+        }
         else if(command == "help")
         {
           if(args.size() == 0 || args[0] == "")

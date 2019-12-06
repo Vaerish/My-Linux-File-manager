@@ -176,23 +176,20 @@ int FCFS(const int& curTime, const vector<Process>& procList, const int& timeQua
             
         }
     }
-    if(procList[ready[0]].isDone)
-    {
-   
-        ready.erase(ready.begin());
-    }
+   for(unsigned int j = 0; j < ready.size(); j++)
+   {
+        if(!procList[ready[j]].isDone)
+        {
+            idx = ready[j];
+            break;
+        }
+   }
 
 
-    if(ready.size() > 0)
+    if(ready.size() <= 0)
     {
        
-        idx = ready[0];
-    }
-    else
-    {
-        
-        idx = -1;
-    
+         idx = -1;
     }
 
     return idx;

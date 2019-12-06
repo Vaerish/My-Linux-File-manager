@@ -28,11 +28,11 @@ void runner(vector<Process>& procList) //this is our two threads
   timeQuantum = 2;
   procIdx = -1;
   int times = 1;
-  schedChoice = schedCh;
-
+  
     //while not all processes have completed: or while computer is not shut down
     while(doneCore)
     {
+        schedChoice = schedCh;
     	std::this_thread::sleep_for (std::chrono::milliseconds(100));
         //get the process to schedule next using the indicated scheduler
         procIdx = -1;
@@ -104,6 +104,7 @@ void runner(vector<Process>& procList) //this is our two threads
             {
                 procList[procIdx].isDone = true;
                 procList[procIdx].timeFinished = times;
+                procList[procIdx].timeScheduled = 0;
             }
             while(accessed)
             {
