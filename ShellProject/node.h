@@ -57,7 +57,7 @@ namespace Shell
       // friends with a computer
       friend Computer;
     public:
-      // Constructors//for (auto child : curDir->Children())
+      // Constructors
       Node(std::string n, bool dir, Node* p, int s, std::string u, std::string g)
       {
         auto time = std::chrono::system_clock::now(); 
@@ -73,7 +73,7 @@ namespace Shell
         perms = DEFAULT_PERM;
         time_run = rand() % 40 + 10;
       }
-      Node(std::string n, bool dir, Node* p) : Node(n, dir, p, 1, p->user, p->group) { }
+      Node(std::string n, bool dir, Node* p, std::string u, std::string g) : Node(n, dir, p, 1, u, g) { }
       // deconstructor
       ~Node()
       {

@@ -82,8 +82,8 @@ namespace Shell //
         // No user to start off with, need to login.
         curUser = nullptr;
         // Create the root of the file system.
-        rootFile = new Node("", true, nullptr, 0, "root", "Users"); //Was "root" "root"
-        // Set the root's parent to itself - makes it auto handle ../ on root. 
+        rootFile = new Node("", true, nullptr, 0, "root", "Users"); //Was "root" "root" // If this changes back then in the resetGroup function it would need to change back as well
+        // Set the root's parent to itself - makes it auto handle ../ on root.
         // simple hack to make my life easier down the line.
         rootFile->parent = rootFile;
         // Make the root user.
@@ -97,8 +97,8 @@ namespace Shell //
         // on who logs in
         curDir = rootFile;
         // create home and root directory
-        rootFile->AddChild(new Node("root", true, rootFile));
-        rootFile->AddChild(new Node("home", true, rootFile));
+        rootFile->AddChild(new Node("root", true, rootFile, curUser->Username(), curUser->Group()));
+        rootFile->AddChild(new Node("home", true, rootFile, curUser->Username(), curUser->Group()));
       }
 
       // Running the computer. Handles all operations from here.
@@ -129,7 +129,7 @@ namespace Shell //
           // if found, use ~ insead the complete path.
           if(pos > -1)
             dir = "~" + dir.substr(pos + curUser->Username().length());
-          // output the status line. 
+          // output the status line.
           std::cout << curUser->Username() << "@" << computerName << ":" << dir
                << "#" << " ";
           // Get input from the user.
@@ -169,7 +169,20 @@ namespace Shell //
         // Make sure all child nodes are reset in the same way
         for (auto child : file->Children())
         {
-          resetUser(uname, child);
+          resetUser(uname, child.second);
+        }
+      }
+      // Function that sets all of the objects owned by a specific group back to root
+      void resetGroup(const std::string gname, Node* file)
+      {
+        if (file->Group() == gname)
+        {
+          file->setGroup("Users");
+        }
+        // Make sure all child nodes are reset in the same way
+        for (auto child : file->Children())
+        {
+          resetGroup(gname, child.second);
         }
       }
 
@@ -204,7 +217,7 @@ namespace Shell //
           if(args.size() > 0)
           {
             // if it has only the correct arg.
-            if(args.size() == 1 && args[0] == "-l") 
+            if(args.size() == 1 && args[0] == "-l")
             {
               // display output
 
@@ -361,7 +374,7 @@ namespace Shell //
               for(std::string arg : args)
               {
                 // Attempt to add new directory if fails output such a message.
-                if(!curDir->AddChild(new Node(arg, true, curDir)))
+                if(!curDir->AddChild(new Node(arg, true, curDir, curUser->Username(), curUser->Group())))
                 {
                   std::cout << "mkdir: cannot create directory '" << arg << "': File exits\n"; 
                 }
@@ -416,7 +429,7 @@ namespace Shell //
               for(std::string arg : args)
               {
                 // try to add and if that fails, update the current timestamp
-                if(!curDir->AddChild(new Node(arg, false, curDir)))
+                if(!curDir->AddChild(new Node(arg, false, curDir, curUser->Username(), curUser->Group())))
                 {
                     PermissionSection = curDir->children[arg]->PermsStr();
                     for (int i = 0; (unsigned) i < user_list.size(); i++)
@@ -1199,8 +1212,8 @@ namespace Shell //
                 temp_string = curUser->Username(); // Saves current user
                 user_list.erase(user_list.begin() + findUser(args[0]) , user_list.begin() + findUser(args[0]) + 1);
                 curUser = &user_list[findUser(temp_string)]; // Fixes the curUser pointer after altering the users list
-		//Change any objects owned by this user to be changed to belong to Root now
-                resetOwner(args[0], rootFile);
+		//Change any objects that were once owned by this user back to root
+                resetUser(args[0], rootFile);
               }
             }
             //Removes listed user from indicated group. Fails if either doen't exist or user is not part of the group, the group is Users, or the user is Root
@@ -1259,7 +1272,7 @@ namespace Shell //
                   user_list.at(i).removeGroup(args[0]);
                 }
                 // Switch permissions of anything belonging to this group to Users group
-                // STUFF NEEDED IMPLEMENTING STILL
+                resetGroup(args[0], rootFile);
               }
             }
             else
