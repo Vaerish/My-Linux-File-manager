@@ -18,7 +18,7 @@ extern int schedCh;
 
 namespace Shell //
 {
-  const std::string CMDS[] = {"", "ls", "pwd", "exit", "mkdir", "touch", "cd", "rm", "rmdir", "chmod", "useradd", "chuser", "groupadd", "usermod", "chown", "chgrp", "userdel", "groupdel", "groups", "users", "run", "ps", "kill", "schedHist"};
+  const std::string CMDS[] = {"", "ls", "pwd", "exit", "mkdir", "touch", "cd", "rm", "rmdir", "chmod", "useradd", "chuser", "groupadd", "usermod", "chown", "chgrp", "userdel", "groupdel", "groups", "users", "run", "ps", "kill", "schedHist", "algorithm"};
 
   // Computer class
   // Represents the OS who controls the file System.
@@ -1496,12 +1496,7 @@ namespace Shell //
               cout << schedHist[i] << endl;
             }
         }
-        //Node stuff maybe?
-        //
-        //
-
-        // Handle help command
-        // this is the algorithm changer where it 
+        // Commnad to allow the user to switch simulated execution algorithm
         else if(command == "algorithm")
         {
             for(auto arg : args) //schedCh communicates to threads what current algorithm is being used
@@ -1639,6 +1634,26 @@ namespace Shell //
           else if(args[0] == "users")
           {
             std::cout << "Usage: users : List the known users to the system\n";
+          }
+          else if(args[0] == "run")
+          {
+            std::cout << "Usage: run <file> : Executes the indicated file\n";
+          }
+          else if(args[0] == "ps")
+          {
+            std::cout << "Usage: ps : Lists all currently running processes\n";
+          }
+          else if(args[0] == "kill")
+          {
+            std::cout << "Usage: kill <file> : Terminates indicated files execution\n";
+          }
+          else if(args[0] == "schedHist")
+          {
+            std::cout << "Usage: schedHist : Outputs the scheduling history\n";
+          }
+          else if(args[0] == "algorithm")
+          {
+            std::cout << "Usage: algorithms <RR, SPN, SRT, HRRN, FCFS> : Changes the current scheduling algorithm to the indicated algorithm\n";
           }
           else
           {
